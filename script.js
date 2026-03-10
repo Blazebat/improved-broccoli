@@ -1,15 +1,8 @@
-let audioCtx, analyser, source;
 let currentAudio = new Audio();
 let nextAudio = new Audio();
-let fadeDuration = 10; // 10 seconds crossfade
+let fadeDuration = 10; 
 let songsPlayedCount = 0;
 let lastIndex = -1;
-
-const playBtn = document.getElementById("playBtn");
-const pauseBtn = document.getElementById("pauseBtn");
-const title = document.getElementById("title");
-const volume = document.getElementById("volume");
-const onAirBox = document.getElementById("onAirBox");
 
 const playlist = [
 { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
@@ -75,24 +68,20 @@ const playlist = [
 ];
 
 function radioMessage() {
-    const msgs = ["You're listening to Rage Radio.", "Keep it locked to the best Love hits.", "Rage Radio, feel the love."];
+    const msgs = ["You're listening to Rage Radio.", "Keep it locked to the best OPM hits.", "Rage Radio, feel the energy."];
     const msg = new SpeechSynthesisUtterance(msgs[Math.floor(Math.random() * msgs.length)]);
-    msg.lang = "en-US";
     speechSynthesis.speak(msg);
 }
 
 function fade(audioEl, targetVol, duration) {
-    let steps = 100; // High resolution for smooth 10s fade
+    let steps = 100;
     let increment = (targetVol - audioEl.volume) / steps;
     let interval = (duration * 1000) / steps;
     let vol = audioEl.volume;
-    
     let timer = setInterval(() => {
         vol += increment;
         audioEl.volume = Math.max(0, Math.min(1, vol));
-        if ((increment > 0 && vol >= targetVol) || (increment < 0 && vol <= targetVol)) {
-            clearInterval(timer);
-        }
+        if ((increment > 0 && vol >= targetVol) || (increment < 0 && vol <= targetVol)) clearInterval(timer);
     }, interval);
 }
 
@@ -102,56 +91,44 @@ function nextSong() {
     do { newIndex = Math.floor(Math.random() * playlist.length); } while (newIndex === lastIndex);
     lastIndex = newIndex;
 
-    // Load next track
     nextAudio.src = playlist[newIndex].src;
     nextAudio.volume = 0;
     nextAudio.play().catch(e => console.log("Buffering..."));
 
-    // Crossfade (10 seconds)
     fade(currentAudio, 0, fadeDuration);
     fade(nextAudio, 1, fadeDuration);
 
-    // Swap players after fade finishes
     setTimeout(() => {
         currentAudio.pause();
         currentAudio.src = nextAudio.src;
         currentAudio.volume = 1;
         currentAudio.play();
-        title.textContent = "NOW PLAYING: " + playlist[newIndex].title;
+        document.getElementById("title").textContent = "NOW PLAYING: " + playlist[newIndex].title;
     }, fadeDuration * 1000);
 
-    // Trigger DJ Message after 2 songs
     if (songsPlayedCount >= 2) {
         songsPlayedCount = 0;
-        // Schedule announcement 5 seconds after the fade ends
-        setTimeout(radioMessage, (fadeDuration * 1000) + 5000);
+        setTimeout(radioMessage, (fadeDuration * 1000) + 2000);
     }
 }
 
-// Setup audio listeners
 currentAudio.addEventListener("ended", nextSong);
 
-playBtn.onclick = async () => {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        source = audioCtx.createMediaElementSource(currentAudio);
-        analyser = audioCtx.createAnalyser();
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        // Add visualizer code here if needed
-    }
-    if (audioCtx.state === "suspended") await audioCtx.resume();
-    
+document.getElementById("playBtn").onclick = () => {
     if (currentAudio.paused) {
         currentAudio.src = playlist[Math.floor(Math.random() * playlist.length)].src;
         currentAudio.play();
-        onAirBox.classList.add("active");
-        onAirBox.textContent = "ON AIR";
+        document.getElementById("onAirBox").classList.add("active");
+        document.getElementById("onAirBox").textContent = "ON AIR";
     }
 };
 
-pauseBtn.onclick = () => { 
-    currentAudio.pause(); 
-    onAirBox.classList.remove("active"); 
-    onAirBox.textContent = "OFF AIR"; 
+document.getElementById("requestBtn").onclick = () => { document.getElementById("requestModal").style.display = "block"; };
+document.querySelector(".close-btn").onclick = () => { document.getElementById("requestModal").style.display = "none"; };
+document.getElementById("sendRequest").onclick = () => {
+    const song = document.getElementById("requestInput").value;
+    if (song.trim()) {
+        window.open(`https://m.me/ragemusicph?text=${encodeURIComponent('Request: ' + song)}`, '_blank');
+        document.getElementById("requestModal").style.display = "none";
+    }
 };
