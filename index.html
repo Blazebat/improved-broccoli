@@ -3,20 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rage Radio | On Air</title>
+    <title>Rage Radio | OPM Hits</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="radio-container">
         <header>
-            <div class="on-air-container">
-                <div id="onAirBox" class="on-air-box">OFF AIR</div>
-            </div>
-            
-            <div class="logo-container">
-                <img src="logo.png" alt="Rage Radio Logo" class="site-logo">
-            </div>
+            <div id="onAirBox" class="on-air-box">OFF AIR</div>
+            <img src="logo.png" alt="Rage Radio" class="site-logo">
             <p class="tagline">Feel the Energy</p>
         </header>
 
@@ -25,19 +19,12 @@
         </div>
 
         <div class="now-playing">
-            <h2 id="title">Initializing Rage Radio...</h2>
+            <h2 id="title">Click Play to Begin</h2>
         </div>
-
-        <audio id="audio" crossorigin="anonymous"></audio>
 
         <div class="controls">
             <button id="playBtn" class="btn">PLAY</button>
             <button id="pauseBtn" class="btn">PAUSE</button>
-        </div>
-
-        <div class="volume-container">
-            <label for="volume">MASTER VOLUME</label>
-            <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
         </div>
 
         <button id="requestBtn" class="btn request-btn">REQUEST A SONG</button>
@@ -47,12 +34,11 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h3>SONG REQUEST</h3>
-            <p style="font-size: 0.7rem; color: #888; margin-bottom: 10px;">Send request to ragemusicph</p>
             <input type="text" id="requestInput" placeholder="Song Title - Artist">
-            <button id="sendRequest" class="btn">SEND VIA MESSENGER</button>
+            <button id="sendRequest" class="btn">SEND TO MESSENGER</button>
         </div>
     </div>
-
+    <audio id="audio"></audio>
     <script src="script.js"></script>
 </body>
 </html>
