@@ -1,7 +1,7 @@
 name: Stream Music to ZenoFM
 
 on:
-  workflow_dispatch:  # Enables the manual "Run workflow" button
+  workflow_dispatch:
   schedule:
     - cron: '0 */6 * * *' # Schedules an attempt to restart every 6 hours
 
@@ -18,7 +18,8 @@ jobs:
 
       - name: Prepare Playlist
         run: |
-          # Extracts URLs from your music.js and formats them for FFmpeg
+          # Extracts URLs from music.js and formats them for FFmpeg
+          # Ensures each URL starts with 'file ' as required by the concat demuxer
           grep -o 'src: "[^"]*"' music.js | sed 's/src: "//g; s/"//g' | sed 's/^/file /' > playlist.txt
 
       - name: Start Streaming
@@ -29,7 +30,12 @@ jobs:
           ZENO_PORT: ${{ secrets.ZENO_PORT }}
           MOUNT_POINT: ${{ secrets.MOUNT_POINT }}
         run: |
-          # Streaming the playlist to Icecast/Zeno.fm
-          ffmpeg -re -stream_loop -1 -f concat -safe 0 -i playlist.txt \
+          # FFmpeg command with security whitelist and reconnection logic
+          # The -protocol_whitelist allows fetching the remote https files
+          # The -reconnect flags help the stream recover from network drops
+          ffmpeg -re -stream_loop -1 \
+            -protocol_whitelist file,http,https,tcp,tls,crypto \
+            -reconnect 1 -reconnect_at_eof 1 -reconnect_stream_delay 1 \
+            -f concat -safe 0 -i playlist.txt \
             -c:a libmp3lame -b:a 128k -content_type audio/mpeg \
             -f mp3 icecast://$ZENO_USER:$ZENO_PASS@$ZENO_HOST:$ZENO_PORT$MOUNT_POINT
