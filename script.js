@@ -1,8 +1,14 @@
-let audioCtx;
-let analyser;
-let source;
+const audio = document.getElementById("audio");
+const playBtn = document.getElementById("playBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const title = document.getElementById("title");
+const volume = document.getElementById("volume");
+const canvas = document.getElementById("eq");
+const ctx = canvas.getContext("2d");
 
-// Playlist in the correct format as per your request
+// Ensure cross-origin access for visualizer
+audio.crossOrigin = "anonymous";
+
 const playlist = [
 { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
  { title: "Salamat - Yeng Constantino", src: "https://dn711104.ca.archive.org/0/items/3rsradio/37_Salamat.mp3" },
@@ -66,153 +72,87 @@ const playlist = [
   { title: "Ikaw Lamang", src: "https://dn710702.ca.archive.org/0/items/OPMWeddingSongsVol1/06.%20Ikaw%20Lamang.mp3" },
 ];
 
-const audio = document.getElementById("audio");
-const playBtn = document.getElementById("playBtn");
-const pauseBtn = document.getElementById("pauseBtn");
-const title = document.getElementById("title");
-const volume = document.getElementById("volume");
-const canvas = document.getElementById("eq");
-const ctx = canvas.getContext("2d");
-
+let audioCtx, analyser, source;
 let songCount = 0;
 let lastIndex = -1;
-let index = Math.floor(Math.random() * playlist.length);
 
-// Sample messages for the radio
-const radioMessages = [
-  "You're listening to Radio Rage, the best of love songs.",
-  "Stay tuned, we have more hits coming your way!",
-  "Keep it locked right here on Radio Rage.",
-  "We'll be back with more music after this short break.",
-  "You’re tuned into Radio Rage, where the music never stops.",
-  "Thanks for listening, let's keep the good vibes going!"
-];
-
-// Load the song and update the title
-function loadSong(i) {
-  audio.src = playlist[i].src;
-  title.textContent = "Now Playing: " + playlist[i].title;
-
-  // Preload the audio so it's ready to play
-  audio.load();  // This ensures the audio is preloaded
-  audio.oncanplaythrough = () => {
-    // This ensures that the song is ready to be played
-    console.log(`Song loaded: ${playlist[i].title}`);
-  };
-}
-
-// Check for errors and skip the song if it fails
-audio.onerror = () => {
-  console.log("Error with the song, skipping...");
-  nextSong(); // Skip to the next song
-};
-
-// Move to the next song when the current song ends
-audio.addEventListener("ended", nextSong);
-
-// Move to the next song (Smart shuffle logic)
-function nextSong() {
-  songCount++;
-  let newIndex;
-
-  do {
-    newIndex = Math.floor(Math.random() * playlist.length);
-  } while (newIndex === lastIndex);  // Ensure no repetition
-
-  lastIndex = newIndex;
-  loadSong(newIndex);
-  audio.play();
-
-  if (songCount % 2 === 0) {
-    radioMessage();  // Announce message after every 2 songs
-  }
-}
-
-// Play the song
-playBtn.onclick = async () => {
+// --- AUDIO ENGINE ---
+async function initAudio() {
   if (!audioCtx) {
-    audioCtx = new AudioContext();
-    source = audioCtx.createMediaElementSource(audio);
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 64;
+    
+    // Connect audio to the visualizer
+    source = audioCtx.createMediaElementSource(audio);
     source.connect(analyser);
     analyser.connect(audioCtx.destination);
-    analyser.fftSize = 64;
     drawEQ();
   }
-
-  if (audioCtx.state === "suspended") {
-    await audioCtx.resume();
-  }
-
-  // Check if the audio is ready to play
-  if (audio.readyState >= 3) {
-    audio.play().catch((e) => {
-      console.error("Error playing audio:", e);
-    });
-  } else {
-    console.log("Audio not ready yet.");
-  }
-
-  welcomeVoice();
-};
-
-// Pause the song
-pauseBtn.onclick = () => {
-  audio.pause();
-  console.log("Pause button clicked");
-};
-
-// Volume control
-volume.oninput = () => {
-  audio.volume = volume.value;
-};
-
-// Voice announcements
-function welcomeVoice() {
-  const msg = new SpeechSynthesisUtterance("Welcome to 3RS Radio. Enjoy the music.");
-  msg.lang = "en-US";
-  speechSynthesis.speak(msg);
+  if (audioCtx.state === "suspended") await audioCtx.resume();
 }
 
-function radioMessage() {
-  // Randomly choose a message every 2 songs
-  const randomMessage = radioMessages[Math.floor(Math.random() * radioMessages.length)];
-  const msg = new SpeechSynthesisUtterance(randomMessage);
-  msg.lang = "en-US";
-  speechSynthesis.speak(msg);
-}
-
-// Equalizer visualizer
+// 
 function drawEQ() {
   const bufferLength = analyser.frequencyBinCount;
   const dataArray = new Uint8Array(bufferLength);
-
+  
   function draw() {
     requestAnimationFrame(draw);
     analyser.getByteFrequencyData(dataArray);
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const barWidth = canvas.width / bufferLength;
-
     for (let i = 0; i < bufferLength; i++) {
-      const height = dataArray[i];
-      ctx.fillStyle = `hsl(${i * 12},100%,50%)`;
+      const height = dataArray[i] / 2;
+      ctx.fillStyle = `hsl(${i * 12}, 100%, 50%)`;
       ctx.fillRect(i * barWidth, canvas.height - height, barWidth - 2, height);
     }
   }
-
   draw();
 }
 
-// Load the first song and start playing
-loadSong(index);
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').then((registration) => {
-      console.log('Service Worker registered with scope:', registration.scope);
-    }).catch((error) => {
-      console.log('Service Worker registration failed:', error);
-    });
-  });
+// --- PLAYER LOGIC ---
+async function nextSong() {
+  songCount++;
+  let newIndex;
+  do { newIndex = Math.floor(Math.random() * playlist.length); } while (newIndex === lastIndex);
+  
+  lastIndex = newIndex;
+  audio.src = playlist[newIndex].src;
+  title.textContent = "NOW PLAYING: " + playlist[newIndex].title;
+  
+  try {
+    await audio.play();
+  } catch (e) {
+    console.warn("Playback blocked, click Play to resume.");
+  }
+
+  if (songCount % 2 === 0) {
+    radioMessage();
+  }
 }
 
+function radioMessage() {
+  const msgs = ["You're listening to Radio Rage.", "Keep it locked to OPM hits.", "Rage Radio, feel the energy."];
+  const msg = new SpeechSynthesisUtterance(msgs[Math.floor(Math.random() * msgs.length)]);
+  speechSynthesis.speak(msg);
+}
+
+// --- EVENTS ---
+playBtn.onclick = async () => {
+  await initAudio();
+  if (audio.paused) nextSong();
+};
+
+pauseBtn.onclick = () => audio.pause();
+volume.oninput = () => audio.volume = volume.value;
+audio.onended = nextSong;
+
+// Request System
+document.getElementById("requestBtn").onclick = () => document.getElementById("requestModal").style.display = "block";
+document.querySelector(".close-btn").onclick = () => document.getElementById("requestModal").style.display = "none";
+document.getElementById("sendRequest").onclick = () => {
+  const song = document.getElementById("requestInput").value;
+  if (song) window.open(`https://m.me/ragemusicph?text=${encodeURIComponent('Request: ' + song)}`);
+  document.getElementById("requestModal").style.display = "none";
+};
