@@ -1,6 +1,11 @@
 const audio = document.getElementById("audio");
 const title = document.getElementById("title");
 const onAirBox = document.getElementById("onAirBox");
+const playBtn = document.getElementById("playBtn");
+
+// Essential: Allow cross-origin audio from Archive.org
+audio.crossOrigin = "anonymous";
+
 const playlist = [
 { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
  { title: "Salamat - Yeng Constantino", src: "https://dn711104.ca.archive.org/0/items/3rsradio/37_Salamat.mp3" },
@@ -73,13 +78,18 @@ function init() {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 64;
+        
+        // Connect the audio element to the visualizer safely
         source = audioCtx.createMediaElementSource(audio);
         source.connect(analyser);
         analyser.connect(audioCtx.destination);
         draw();
+    } else if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
     }
 }
 
+// 
 function draw() {
     const canvas = document.getElementById("eq");
     const ctx = canvas.getContext("2d");
@@ -98,7 +108,9 @@ function playNext() {
     let song = playlist[Math.floor(Math.random() * playlist.length)];
     audio.src = song.src;
     title.textContent = "NOW PLAYING: " + song.title;
-    audio.play();
+    
+    // Play with error handling
+    audio.play().catch(e => console.log("Playback blocked by browser"));
     
     songsPlayedCount++;
     if (songsPlayedCount >= 2) {
@@ -112,8 +124,8 @@ function speakMsg() {
     speechSynthesis.speak(msg);
 }
 
-document.getElementById("playBtn").onclick = () => {
-    init();
+playBtn.onclick = () => {
+    init(); // Setup AudioContext
     playNext();
     onAirBox.classList.add("active");
     onAirBox.textContent = "ON AIR";
