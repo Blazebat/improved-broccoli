@@ -9,6 +9,7 @@ const ctx = canvas.getContext("2d");
 const onAirBox = document.getElementById("onAirBox");
 
 const playlist = [
+  { title: "Paraluman ft. Kean Cipriano - Tabi", src: "https://ia801702.us.archive.org/34/items/ParalumanFt.KeanCipriano-Tabi/Tabi.mp3" },
  { title: "Ikaw Ang Aking Pangarap", src: "https://ia600602.us.archive.org/27/items/opm-wedding-songs-vol.-2-album/01%20Ikaw%20Ang%20Aking%20Pangarap.mp3" },
   { title: "Now That I Have You", src: "https://dn720305.ca.archive.org/0/items/opm-wedding-songs-vol.-2-album/03%20Now%20That%20I%20Have%20You.mp3" },
   { title: "Good Bye, Air Supply", src: "https://dn710007.ca.archive.org/0/items/good-bye-air-supply/Good%20Bye%20-%20Air%20Supply.mp3" },
