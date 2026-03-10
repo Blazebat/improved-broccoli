@@ -8,19 +8,15 @@
 </head>
 <body>
     <div class="radio-container">
-        <header>
-            <div id="onAirBox" class="on-air-box">OFF AIR</div>
-            <img src="logo.png" alt="Rage Radio" class="site-logo">
-            <p class="tagline">Feel the Energy</p>
-        </header>
+        <div id="onAirBox" class="on-air-box">OFF AIR</div>
+        <img src="logo.png" alt="Rage Radio" class="site-logo">
+        <p class="tagline">Feel the Energy</p>
 
         <div class="visualizer-container">
-            <canvas id="eq" width="300" height="150"></canvas>
+            <canvas id="eq" width="300" height="120"></canvas>
         </div>
 
-        <div class="now-playing">
-            <h2 id="title">Click Play to Begin</h2>
-        </div>
+        <h2 id="title">Click Play to Begin</h2>
 
         <div class="controls">
             <button id="playBtn" class="btn">PLAY</button>
@@ -38,7 +34,8 @@
             <button id="sendRequest" class="btn">SEND TO MESSENGER</button>
         </div>
     </div>
-    <audio id="audio"></audio>
+
+    <audio id="audio" crossorigin="anonymous"></audio>
     <script src="script.js"></script>
 </body>
 </html>
