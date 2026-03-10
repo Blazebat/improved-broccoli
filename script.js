@@ -1,4 +1,4 @@
-let audioCtx, analyser;
+let audioCtx, analyser, source;
 let currentAudio = new Audio();
 let nextAudio = new Audio();
 let fadeDuration = 10; 
@@ -68,19 +68,19 @@ const playlist = [
   { title: "Ikaw Lamang", src: "https://dn710702.ca.archive.org/0/items/OPMWeddingSongsVol1/06.%20Ikaw%20Lamang.mp3" }
 ];
 
-// --- SETUP VISUALIZER ---
-function setupVisualizer(audioElement) {
+// --- CORE ENGINE ---
+function initAudio() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 64;
+        
+        // Connect the current player to the visualizer
+        source = audioCtx.createMediaElementSource(currentAudio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
         drawEQ();
     }
-    
-    // Connect audio to visualizer if not already connected
-    let source = audioCtx.createMediaElementSource(audioElement);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
 }
 
 function drawEQ() {
@@ -106,12 +106,11 @@ function drawEQ() {
 function radioMessage() {
     const msgs = ["You're listening to Rage Radio.", "Keep it locked to the best OPM hits.", "Rage Radio, feel the energy."];
     const msg = new SpeechSynthesisUtterance(msgs[Math.floor(Math.random() * msgs.length)]);
-    msg.lang = "en-US";
     speechSynthesis.speak(msg);
 }
 
 function fade(audioEl, targetVol, duration) {
-    let steps = 100;
+    let steps = 50;
     let increment = (targetVol - audioEl.volume) / steps;
     let interval = (duration * 1000) / steps;
     let vol = audioEl.volume;
@@ -153,12 +152,13 @@ function nextSong() {
 currentAudio.addEventListener("ended", nextSong);
 
 document.getElementById("playBtn").onclick = async () => {
-    if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+    initAudio();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
     
     if (currentAudio.paused) {
-        setupVisualizer(currentAudio);
-        setupVisualizer(nextAudio);
-        currentAudio.src = playlist[Math.floor(Math.random() * playlist.length)].src;
+        let startIdx = Math.floor(Math.random() * playlist.length);
+        currentAudio.src = playlist[startIdx].src;
+        document.getElementById("title").textContent = "NOW PLAYING: " + playlist[startIdx].title;
         currentAudio.play();
         document.getElementById("onAirBox").classList.add("active");
         document.getElementById("onAirBox").textContent = "ON AIR";
