@@ -1,3 +1,4 @@
+let audioCtx, analyser;
 let currentAudio = new Audio();
 let nextAudio = new Audio();
 let fadeDuration = 10; 
@@ -67,9 +68,45 @@ const playlist = [
   { title: "Ikaw Lamang", src: "https://dn710702.ca.archive.org/0/items/OPMWeddingSongsVol1/06.%20Ikaw%20Lamang.mp3" }
 ];
 
+// --- SETUP VISUALIZER ---
+function setupVisualizer(audioElement) {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        drawEQ();
+    }
+    
+    // Connect audio to visualizer if not already connected
+    let source = audioCtx.createMediaElementSource(audioElement);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+}
+
+function drawEQ() {
+    const canvas = document.getElementById("eq");
+    const ctx = canvas.getContext("2d");
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    
+    function draw() {
+        requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < bufferLength; i++) {
+            const h = (dataArray[i] / 255) * canvas.height;
+            ctx.fillStyle = `hsl(${i * 12}, 100%, 50%)`;
+            ctx.fillRect(i * (canvas.width / bufferLength), canvas.height - h, 3, h);
+        }
+    }
+    draw();
+}
+
+// --- DJ VOICE & CROSSFADE ---
 function radioMessage() {
     const msgs = ["You're listening to Rage Radio.", "Keep it locked to the best OPM hits.", "Rage Radio, feel the energy."];
     const msg = new SpeechSynthesisUtterance(msgs[Math.floor(Math.random() * msgs.length)]);
+    msg.lang = "en-US";
     speechSynthesis.speak(msg);
 }
 
@@ -112,10 +149,15 @@ function nextSong() {
     }
 }
 
+// --- CONTROLS ---
 currentAudio.addEventListener("ended", nextSong);
 
-document.getElementById("playBtn").onclick = () => {
+document.getElementById("playBtn").onclick = async () => {
+    if (audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+    
     if (currentAudio.paused) {
+        setupVisualizer(currentAudio);
+        setupVisualizer(nextAudio);
         currentAudio.src = playlist[Math.floor(Math.random() * playlist.length)].src;
         currentAudio.play();
         document.getElementById("onAirBox").classList.add("active");
@@ -123,6 +165,13 @@ document.getElementById("playBtn").onclick = () => {
     }
 };
 
+document.getElementById("pauseBtn").onclick = () => { 
+    currentAudio.pause(); 
+    document.getElementById("onAirBox").classList.remove("active"); 
+    document.getElementById("onAirBox").textContent = "OFF AIR"; 
+};
+
+// --- REQUESTS ---
 document.getElementById("requestBtn").onclick = () => { document.getElementById("requestModal").style.display = "block"; };
 document.querySelector(".close-btn").onclick = () => { document.getElementById("requestModal").style.display = "none"; };
 document.getElementById("sendRequest").onclick = () => {
