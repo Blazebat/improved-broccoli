@@ -18,7 +18,17 @@ const radioMessages = [
 ];
 
 const playlist = [
-  { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
+ { title: "Paint My Love - Michael Learns To Rock", src: "https://ia601404.us.archive.org/31/items/love_prt1/01_Paint%20My%20Love%20-%202002%20Remaster.mp3" },
+ { title: "When a Man Loves a Woman - Michael Bolton", src: "https://ia601404.us.archive.org/31/items/love_prt1/02_When%20a%20Man%20Loves%20a%20Woman.mp3" },
+ { title: "Said I Loved You... But I Lied - Michael Bolton", src: "https://ia601404.us.archive.org/31/items/love_prt1/03_Said%20I%20Loved%20You...But%20I%20Lied.mp3" },
+ { title: "How Am I Supposed to Live Without You - Michael Bolton", src: "https://ia601404.us.archive.org/31/items/love_prt1/04_How%20Am%20I%20Supposed%20to%20Live%20Without%20You.mp3" },
+ { title: "Go the Distance - Michael Bolton", src: "https://ia601404.us.archive.org/31/items/love_prt1/05_Go%20the%20Distance.mp3" },
+ { title: "Sailing - Christopher Cross", src: "https://ia601404.us.archive.org/31/items/love_prt1/06_Sailing.mp3" },
+ { title: "(They Long To Be) Close To You - Carpenters", src: "https://ia601404.us.archive.org/31/items/love_prt1/07_%28They%20Long%20To%20Be%29%20Close%20To%20You.mp3" },
+ { title: "The Lady In Red - Chris de Burgh", src: "https://ia601404.us.archive.org/31/items/love_prt1/08_The%20Lady%20In%20Red.mp3" },
+ { title: "Crazy - Aerosmith", src: "https://ia601404.us.archive.org/31/items/love_prt1/09_Crazy.mp3" },
+ { title: "Cryin' - Aerosmith", src: "https://ia601404.us.archive.org/31/items/love_prt1/10_Cryin%27.mp3" },
+ { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
  { title: "Salamat - Yeng Constantino", src: "https://dn711104.ca.archive.org/0/items/3rsradio/37_Salamat.mp3" },
  { title: "Let Me Be the One - Julie Anne San Jose and Jimmy Bondoc", src: "https://dn711104.ca.archive.org/0/items/3rsradio/39_Let%20Me%20Be%20the%20One.mp3" },
  { title: "Buko - Jireh Lim", src: "https://dn711104.ca.archive.org/0/items/3rsradio/40_Buko.mp3" },
