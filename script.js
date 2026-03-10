@@ -8,8 +8,17 @@ const canvas = document.getElementById("eq");
 const ctx = canvas.getContext("2d");
 const onAirBox = document.getElementById("onAirBox");
 
+// --- RADIO MESSAGES CONFIG ---
+const radioMessages = [
+  "You're listening to Rage Radio, the best of love songs.",
+  "Stay tuned, we have more hits coming your way!",
+  "Keep it locked right here on Rage Radio.",
+  "You’re tuned into Rage Radio, where the music never stops.",
+  "Rage Radio: Feel the energy of the greatest OPM hits."
+];
+
 const playlist = [
-  { title: "Paraluman ft. Kean Cipriano - Tabi", src: "https://ia801702.us.archive.org/34/items/ParalumanFt.KeanCipriano-Tabi/Tabi.mp3" },
+ { title: "Paraluman ft. Kean Cipriano - Tabi", src: "https://ia801702.us.archive.org/34/items/ParalumanFt.KeanCipriano-Tabi/Tabi.mp3" },
  { title: "Ikaw Ang Aking Pangarap", src: "https://ia600602.us.archive.org/27/items/opm-wedding-songs-vol.-2-album/01%20Ikaw%20Ang%20Aking%20Pangarap.mp3" },
   { title: "Now That I Have You", src: "https://dn720305.ca.archive.org/0/items/opm-wedding-songs-vol.-2-album/03%20Now%20That%20I%20Have%20You.mp3" },
   { title: "Good Bye, Air Supply", src: "https://dn710007.ca.archive.org/0/items/good-bye-air-supply/Good%20Bye%20-%20Air%20Supply.mp3" },
@@ -72,6 +81,7 @@ const playlist = [
   { title: "Ikaw Lamang", src: "https://dn710702.ca.archive.org/0/items/OPMWeddingSongsVol1/06.%20Ikaw%20Lamang.mp3" }
 ];
 
+let songCount = 0;
 let lastIndex = -1;
 let index = Math.floor(Math.random() * playlist.length);
 
@@ -80,12 +90,34 @@ function loadSong(i) {
     title.textContent = "NOW PLAYING: " + playlist[i].title;
 }
 
+// --- VOICE FUNCTIONS ---
+function welcomeVoice() {
+  const msg = new SpeechSynthesisUtterance("Welcome to Rage Radio. Enjoy the music.");
+  msg.lang = "en-US";
+  speechSynthesis.speak(msg);
+}
+
+function radioMessage() {
+  const randomMsg = radioMessages[Math.floor(Math.random() * radioMessages.length)];
+  const msg = new SpeechSynthesisUtterance(randomMsg);
+  msg.lang = "en-US";
+  speechSynthesis.speak(msg);
+}
+
 function nextSong() {
+    songCount++;
     let newIndex;
     do { newIndex = Math.floor(Math.random() * playlist.length); } while (newIndex === lastIndex);
     lastIndex = newIndex;
     loadSong(newIndex);
     audio.play();
+    onAirBox.classList.add("active");
+    onAirBox.textContent = "ON AIR";
+
+    // Play a radio announcement every 2 songs
+    if (songCount % 2 === 0) {
+      radioMessage();
+    }
 }
 
 audio.addEventListener("ended", nextSong);
@@ -105,6 +137,7 @@ playBtn.onclick = async () => {
     audio.play();
     onAirBox.classList.add("active");
     onAirBox.textContent = "ON AIR";
+    welcomeVoice();
 };
 
 pauseBtn.onclick = () => {
