@@ -2,12 +2,9 @@ const audio = document.getElementById("audio");
 const playBtn = document.getElementById("playBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const title = document.getElementById("title");
-const volume = document.getElementById("volume");
+const onAirBox = document.getElementById("onAirBox");
 const canvas = document.getElementById("eq");
 const ctx = canvas.getContext("2d");
-
-// Ensure cross-origin access for visualizer
-audio.crossOrigin = "anonymous";
 
 const playlist = [
 { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
@@ -74,85 +71,64 @@ const playlist = [
 
 let audioCtx, analyser, source;
 let songCount = 0;
-let lastIndex = -1;
 
-// --- AUDIO ENGINE ---
 async function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 64;
-    
-    // Connect audio to the visualizer
-    source = audioCtx.createMediaElementSource(audio);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    drawEQ();
-  }
-  if (audioCtx.state === "suspended") await audioCtx.resume();
-}
-
-// 
-function drawEQ() {
-  const bufferLength = analyser.frequencyBinCount;
-  const dataArray = new Uint8Array(bufferLength);
-  
-  function draw() {
-    requestAnimationFrame(draw);
-    analyser.getByteFrequencyData(dataArray);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const barWidth = canvas.width / bufferLength;
-    for (let i = 0; i < bufferLength; i++) {
-      const height = dataArray[i] / 2;
-      ctx.fillStyle = `hsl(${i * 12}, 100%, 50%)`;
-      ctx.fillRect(i * barWidth, canvas.height - height, barWidth - 2, height);
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        draw();
     }
-  }
-  draw();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
 }
 
-// --- PLAYER LOGIC ---
-async function nextSong() {
-  songCount++;
-  let newIndex;
-  do { newIndex = Math.floor(Math.random() * playlist.length); } while (newIndex === lastIndex);
-  
-  lastIndex = newIndex;
-  audio.src = playlist[newIndex].src;
-  title.textContent = "NOW PLAYING: " + playlist[newIndex].title;
-  
-  try {
-    await audio.play();
-  } catch (e) {
-    console.warn("Playback blocked, click Play to resume.");
-  }
-
-  if (songCount % 2 === 0) {
-    radioMessage();
-  }
+function draw() {
+    requestAnimationFrame(draw);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    data.forEach((val, i) => {
+        ctx.fillStyle = `hsl(${i * 12}, 100%, 50%)`;
+        ctx.fillRect(i * 5, canvas.height - (val/2), 4, val/2);
+    });
 }
 
-function radioMessage() {
-  const msgs = ["You're listening to Radio Rage.", "Keep it locked to OPM hits.", "Rage Radio, feel the energy."];
-  const msg = new SpeechSynthesisUtterance(msgs[Math.floor(Math.random() * msgs.length)]);
-  speechSynthesis.speak(msg);
+function playNext() {
+    let song = playlist[Math.floor(Math.random() * playlist.length)];
+    audio.src = song.src;
+    title.textContent = "NOW PLAYING: " + song.title;
+    audio.play();
+    
+    songCount++;
+    if (songCount >= 2) {
+        songCount = 0;
+        setTimeout(() => speechSynthesis.speak(new SpeechSynthesisUtterance("You're listening to Rage Radio!")), 2000);
+    }
 }
 
-// --- EVENTS ---
 playBtn.onclick = async () => {
-  await initAudio();
-  if (audio.paused) nextSong();
+    await initAudio();
+    playNext();
+    onAirBox.classList.add("active");
+    onAirBox.textContent = "ON AIR";
 };
 
-pauseBtn.onclick = () => audio.pause();
-volume.oninput = () => audio.volume = volume.value;
-audio.onended = nextSong;
+pauseBtn.onclick = () => {
+    audio.pause();
+    onAirBox.classList.remove("active");
+    onAirBox.textContent = "OFF AIR";
+};
 
-// Request System
+audio.onended = playNext;
+
+// Requests
 document.getElementById("requestBtn").onclick = () => document.getElementById("requestModal").style.display = "block";
 document.querySelector(".close-btn").onclick = () => document.getElementById("requestModal").style.display = "none";
 document.getElementById("sendRequest").onclick = () => {
-  const song = document.getElementById("requestInput").value;
-  if (song) window.open(`https://m.me/ragemusicph?text=${encodeURIComponent('Request: ' + song)}`);
-  document.getElementById("requestModal").style.display = "none";
+    const song = document.getElementById("requestInput").value;
+    window.open(`https://m.me/ragemusicph?text=${encodeURIComponent('Request: ' + song)}`);
+    document.getElementById("requestModal").style.display = "none";
 };
