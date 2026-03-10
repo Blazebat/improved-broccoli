@@ -1,0 +1,12 @@
+      - name: Start Stream
+        env:
+          ZENO_PASS: ${{ secrets.ZENO_PASS }}
+          ZENO_USER: ${{ secrets.ZENO_USER }}
+          ZENO_HOST: ${{ secrets.ZENO_HOST }}
+          ZENO_PORT: ${{ secrets.ZENO_PORT }}
+          MOUNT_POINT: ${{ secrets.MOUNT_POINT }}
+        run: |
+          ffmpeg -re -stream_loop -1 -f concat -safe 0 -i playlist.txt \
+            -c:a libmp3lame -b:a 128k -content_type audio/mpeg \
+            -f mp3 icecast://$ZENO_USER:$ZENO_PASS@$ZENO_HOST:$ZENO_PORT$MOUNT_POINT
+
