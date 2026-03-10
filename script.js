@@ -18,6 +18,10 @@ const radioMessages = [
 ];
 
 const playlist = [
+  { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
+ { title: "Salamat - Yeng Constantino", src: "https://dn711104.ca.archive.org/0/items/3rsradio/37_Salamat.mp3" },
+ { title: "Let Me Be the One - Julie Anne San Jose and Jimmy Bondoc", src: "https://dn711104.ca.archive.org/0/items/3rsradio/39_Let%20Me%20Be%20the%20One.mp3" },
+ { title: "Buko - Jireh Lim", src: "https://dn711104.ca.archive.org/0/items/3rsradio/40_Buko.mp3" },
  { title: "Paraluman ft. Kean Cipriano - Tabi", src: "https://ia801702.us.archive.org/34/items/ParalumanFt.KeanCipriano-Tabi/Tabi.mp3" },
  { title: "Ikaw Ang Aking Pangarap", src: "https://ia600602.us.archive.org/27/items/opm-wedding-songs-vol.-2-album/01%20Ikaw%20Ang%20Aking%20Pangarap.mp3" },
   { title: "Now That I Have You", src: "https://dn720305.ca.archive.org/0/items/opm-wedding-songs-vol.-2-album/03%20Now%20That%20I%20Have%20You.mp3" },
