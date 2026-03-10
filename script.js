@@ -1,16 +1,6 @@
-let audioCtx, analyser, source;
-let currentAudio = new Audio();
-let nextAudio = new Audio();
-let fadeDuration = 2; // Crossfade duration in seconds
-let songsPlayedCount = 0;
-let lastIndex = -1;
-
-const playBtn = document.getElementById("playBtn");
-const pauseBtn = document.getElementById("pauseBtn");
+const audio = document.getElementById("audio");
 const title = document.getElementById("title");
-const volume = document.getElementById("volume");
 const onAirBox = document.getElementById("onAirBox");
-
 const playlist = [
 { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
  { title: "Salamat - Yeng Constantino", src: "https://dn711104.ca.archive.org/0/items/3rsradio/37_Salamat.mp3" },
@@ -74,90 +64,68 @@ const playlist = [
   { title: "Ikaw Lamang", src: "https://dn710702.ca.archive.org/0/items/OPMWeddingSongsVol1/06.%20Ikaw%20Lamang.mp3" }
 ];
 
-// --- DJ VOICE LOGIC ---
-function radioMessage() {
-    const msgs = ["You're listening to Rage Radio.", "Keep it locked to the best OPM hits.", "Rage Radio, feel the energy."];
-    const msg = new SpeechSynthesisUtterance(msgs[Math.floor(Math.random() * msgs.length)]);
-    msg.lang = "en-US";
+let songsPlayedCount = 0;
+let audioCtx, analyser, source;
+
+// --- INITIALIZE AUDIO & VISUALIZER ---
+function init() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        draw();
+    }
+}
+
+function draw() {
+    const canvas = document.getElementById("eq");
+    const ctx = canvas.getContext("2d");
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(data);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    data.forEach((val, i) => {
+        ctx.fillStyle = `hsl(${i * 10}, 100%, 50%)`;
+        ctx.fillRect(i * 5, canvas.height - (val/2), 4, val/2);
+    });
+}
+
+// --- PLAYER LOGIC ---
+function playNext() {
+    let song = playlist[Math.floor(Math.random() * playlist.length)];
+    audio.src = song.src;
+    title.textContent = "NOW PLAYING: " + song.title;
+    audio.play();
+    
+    songsPlayedCount++;
+    if (songsPlayedCount >= 2) {
+        songsPlayedCount = 0;
+        setTimeout(speakMsg, 2000);
+    }
+}
+
+function speakMsg() {
+    let msg = new SpeechSynthesisUtterance("You're listening to Rage Radio, keeping it real with OPM.");
     speechSynthesis.speak(msg);
 }
 
-// --- CROSSFADE LOGIC ---
-function fade(audioEl, endVol, duration) {
-    let steps = 20;
-    let increment = (endVol - audioEl.volume) / steps;
-    let interval = (duration * 1000) / steps;
-    let vol = audioEl.volume;
-    let timer = setInterval(() => {
-        vol += increment;
-        audioEl.volume = Math.max(0, Math.min(1, vol));
-        if (vol <= 0 || vol >= 1) clearInterval(timer);
-    }, interval);
-}
-
-function nextSong() {
-    songsPlayedCount++;
-    let newIndex;
-    do { newIndex = Math.floor(Math.random() * playlist.length); } while (newIndex === lastIndex);
-    lastIndex = newIndex;
-
-    nextAudio.src = playlist[newIndex].src;
-    nextAudio.volume = 0;
-    nextAudio.play().catch(e => console.log("Waiting for user interaction"));
-
-    fade(currentAudio, 0, fadeDuration);
-    fade(nextAudio, 1, fadeDuration);
-
-    setTimeout(() => {
-        currentAudio.pause();
-        currentAudio.src = nextAudio.src;
-        currentAudio.volume = 1;
-        currentAudio.play();
-        title.textContent = "NOW PLAYING: " + playlist[newIndex].title;
-    }, fadeDuration * 1000);
-
-    // Trigger DJ Message after 2 songs
-    if (songsPlayedCount >= 2) {
-        songsPlayedCount = 0;
-        setTimeout(radioMessage, 2000);
-    }
-}
-
-// --- INITIALIZATION ---
-currentAudio.addEventListener("ended", nextSong);
-
-playBtn.onclick = async () => {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        source = audioCtx.createMediaElementSource(currentAudio);
-        analyser = audioCtx.createAnalyser();
-        source.connect(analyser);
-        analyser.connect(audioCtx.destination);
-    }
-    if (audioCtx.state === "suspended") await audioCtx.resume();
-    
-    currentAudio.src = playlist[Math.floor(Math.random() * playlist.length)].src;
-    currentAudio.play();
+document.getElementById("playBtn").onclick = () => {
+    init();
+    playNext();
     onAirBox.classList.add("active");
     onAirBox.textContent = "ON AIR";
 };
 
-pauseBtn.onclick = () => { 
-    currentAudio.pause(); 
-    onAirBox.classList.remove("active"); 
-    onAirBox.textContent = "OFF AIR"; 
-};
+audio.onended = playNext;
 
-volume.oninput = () => { currentAudio.volume = volume.value; };
-
-// --- REQUEST MODAL ---
-const modal = document.getElementById("requestModal");
-document.getElementById("requestBtn").onclick = () => { modal.style.display = "block"; };
-document.querySelector(".close-btn").onclick = () => { modal.style.display = "none"; };
+// --- REQUESTS ---
+document.getElementById("requestBtn").onclick = () => document.getElementById("requestModal").style.display = "block";
+document.querySelector(".close-btn").onclick = () => document.getElementById("requestModal").style.display = "none";
 document.getElementById("sendRequest").onclick = () => {
-    const song = document.getElementById("requestInput").value;
-    if (song.trim()) {
-        window.open(`https://m.me/ragemusicph?text=${encodeURIComponent('Request: ' + song)}`, '_blank');
-        modal.style.display = "none";
-    }
+    let song = document.getElementById("requestInput").value;
+    window.open(`https://m.me/ragemusicph?text=${encodeURIComponent('Request: ' + song)}`);
+    document.getElementById("requestModal").style.display = "none";
 };
