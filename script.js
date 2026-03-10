@@ -8,26 +8,7 @@ const canvas = document.getElementById("eq");
 const ctx = canvas.getContext("2d");
 const onAirBox = document.getElementById("onAirBox");
 
-// --- RADIO MESSAGES CONFIG ---
-const radioMessages = [
-  "You're listening to Rage Radio, the best of love songs.",
-  "Stay tuned, we have more hits coming your way!",
-  "Keep it locked right here on Rage Radio.",
-  "You’re tuned into Rage Radio, where the music never stops.",
-  "Rage Radio: Feel the energy of the greatest OPM hits."
-];
-
 const playlist = [
- { title: "Paint My Love - Michael Learns To Rock", src: "https://ia601404.us.archive.org/31/items/love_prt1/01_Paint%20My%20Love%20-%202002%20Remaster.mp3" },
- { title: "When a Man Loves a Woman - Michael Bolton", src: "https://ia601404.us.archive.org/31/items/love_prt1/02_When%20a%20Man%20Loves%20a%20Woman.mp3" },
- { title: "Said I Loved You... But I Lied - Michael Bolton", src: "https://ia601404.us.archive.org/31/items/love_prt1/03_Said%20I%20Loved%20You...But%20I%20Lied.mp3" },
- { title: "How Am I Supposed to Live Without You - Michael Bolton", src: "https://ia601404.us.archive.org/31/items/love_prt1/04_How%20Am%20I%20Supposed%20to%20Live%20Without%20You.mp3" },
- { title: "Go the Distance - Michael Bolton", src: "https://ia601404.us.archive.org/31/items/love_prt1/05_Go%20the%20Distance.mp3" },
- { title: "Sailing - Christopher Cross", src: "https://ia601404.us.archive.org/31/items/love_prt1/06_Sailing.mp3" },
- { title: "(They Long To Be) Close To You - Carpenters", src: "https://ia601404.us.archive.org/31/items/love_prt1/07_%28They%20Long%20To%20Be%29%20Close%20To%20You.mp3" },
- { title: "The Lady In Red - Chris de Burgh", src: "https://ia601404.us.archive.org/31/items/love_prt1/08_The%20Lady%20In%20Red.mp3" },
- { title: "Crazy - Aerosmith", src: "https://ia601404.us.archive.org/31/items/love_prt1/09_Crazy.mp3" },
- { title: "Cryin' - Aerosmith", src: "https://ia601404.us.archive.org/31/items/love_prt1/10_Cryin%27.mp3" },
  { title: "Chinita Girl - Lil Vinceyy,Guel", src: "https://dn711104.ca.archive.org/0/items/3rsradio/36_Chinita%20Girl.mp3" },
  { title: "Salamat - Yeng Constantino", src: "https://dn711104.ca.archive.org/0/items/3rsradio/37_Salamat.mp3" },
  { title: "Let Me Be the One - Julie Anne San Jose and Jimmy Bondoc", src: "https://dn711104.ca.archive.org/0/items/3rsradio/39_Let%20Me%20Be%20the%20One.mp3" },
@@ -90,27 +71,18 @@ const playlist = [
   { title: "Ikaw Lamang", src: "https://dn710702.ca.archive.org/0/items/OPMWeddingSongsVol1/06.%20Ikaw%20Lamang.mp3" }
 ];
 
-let songCount = 0;
-let lastIndex = -1;
-let index = Math.floor(Math.random() * playlist.length);
+let songCount = 0, lastIndex = -1;
 
 function loadSong(i) {
     audio.src = playlist[i].src;
     title.textContent = "NOW PLAYING: " + playlist[i].title;
-}
-
-// --- VOICE FUNCTIONS ---
-function welcomeVoice() {
-  const msg = new SpeechSynthesisUtterance("Welcome to Radio Rage. Enjoy the music.");
-  msg.lang = "en-US";
-  speechSynthesis.speak(msg);
+    audio.load();
 }
 
 function radioMessage() {
-  const randomMsg = radioMessages[Math.floor(Math.random() * radioMessages.length)];
-  const msg = new SpeechSynthesisUtterance(randomMsg);
-  msg.lang = "en-US";
-  speechSynthesis.speak(msg);
+    const msgs = ["You're listening to Rage Radio.", "Keep it locked to the best OPM hits.", "Rage Radio, feel the energy."];
+    const msg = new SpeechSynthesisUtterance(msgs[Math.floor(Math.random() * msgs.length)]);
+    speechSynthesis.speak(msg);
 }
 
 function nextSong() {
@@ -119,14 +91,11 @@ function nextSong() {
     do { newIndex = Math.floor(Math.random() * playlist.length); } while (newIndex === lastIndex);
     lastIndex = newIndex;
     loadSong(newIndex);
-    audio.play();
-    onAirBox.classList.add("active");
-    onAirBox.textContent = "ON AIR";
+    
+    // Force play with delay to bypass browser lock
+    setTimeout(() => { audio.play().catch(() => console.log("Waiting for user...")); }, 800);
 
-    // Play a radio announcement every 2 songs
-    if (songCount % 2 === 0) {
-      radioMessage();
-    }
+    if (songCount % 2 === 0) radioMessage();
 }
 
 audio.addEventListener("ended", nextSong);
@@ -146,15 +115,9 @@ playBtn.onclick = async () => {
     audio.play();
     onAirBox.classList.add("active");
     onAirBox.textContent = "ON AIR";
-    welcomeVoice();
 };
 
-pauseBtn.onclick = () => {
-    audio.pause();
-    onAirBox.classList.remove("active");
-    onAirBox.textContent = "OFF AIR";
-};
-
+pauseBtn.onclick = () => { audio.pause(); onAirBox.classList.remove("active"); onAirBox.textContent = "OFF AIR"; };
 volume.oninput = () => { audio.volume = volume.value; };
 
 function drawEQ() {
@@ -164,11 +127,10 @@ function drawEQ() {
         requestAnimationFrame(draw);
         analyser.getByteFrequencyData(dataArray);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const barWidth = canvas.width / bufferLength;
         for (let i = 0; i < bufferLength; i++) {
-            const height = (dataArray[i] / 255) * canvas.height;
+            const h = (dataArray[i] / 255) * canvas.height;
             ctx.fillStyle = `hsl(${i * 12}, 100%, 50%)`;
-            ctx.fillRect(i * barWidth, canvas.height - height, barWidth - 1, height);
+            ctx.fillRect(i * (canvas.width / bufferLength), canvas.height - h, 3, h);
         }
     }
     draw();
@@ -176,23 +138,14 @@ function drawEQ() {
 
 // Request Modal Logic
 const modal = document.getElementById("requestModal");
-const requestBtn = document.getElementById("requestBtn");
-const closeBtn = document.querySelector(".close-btn");
-const sendBtn = document.getElementById("sendRequest");
-const requestInput = document.getElementById("requestInput");
-
-requestBtn.onclick = () => { modal.style.display = "block"; };
-closeBtn.onclick = () => { modal.style.display = "none"; };
-window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; };
-
-sendBtn.onclick = () => {
-    const song = requestInput.value;
+document.getElementById("requestBtn").onclick = () => { modal.style.display = "block"; };
+document.querySelector(".close-btn").onclick = () => { modal.style.display = "none"; };
+document.getElementById("sendRequest").onclick = () => {
+    const song = document.getElementById("requestInput").value;
     if (song.trim()) {
-        const msg = encodeURIComponent(`Request for Rage Radio: ${song}`);
-        window.open(`https://m.me/ragemusicph?text=${msg}`, '_blank');
+        window.open(`https://m.me/ragemusicph?text=${encodeURIComponent('Request: ' + song)}`, '_blank');
         modal.style.display = "none";
-        requestInput.value = "";
     }
 };
 
-loadSong(index);
+loadSong(Math.floor(Math.random() * playlist.length));
