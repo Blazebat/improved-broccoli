@@ -34,7 +34,7 @@ const playlist = [
   { title: "Refrain", src: "https://dn721806.ca.archive.org/0/items/jose-mari-chan-with-his-diamond-hits-1996-320kbps/Jose%20Mari%20Chan%20With%20His%20Diamond%20Hits%20%281996%29%20%28320Kbps%29%2F07.%20Jose%20Mari%20Chan%20-%20Refrain.mp3" },
   { title: "After Glow", src: "https://dn721806.ca.archive.org/0/items/jose-mari-chan-with-his-diamond-hits-1996-320kbps/Jose%20Mari%20Chan%20With%20His%20Diamond%20Hits%20%281996%29%20%28320Kbps%29%2F08.%20Jose%20Mari%20Chan%20-%20After%20Glow.mp3" },
   { title: "Can't We Start Over Again", src: "https://ia800500.us.archive.org/6/items/jose-mari-chan-with-his-diamond-hits-1996-320kbps/Jose%20Mari%20Chan%20With%20His%20Diamond%20Hits%20%281996%29%20%28320Kbps%29%2F09.%20Jose%20Mari%20Chan%20-%20Can%27t%20We%20Start%20Over%20Again.mp3" },
-   { title: "Forevermore", src: "https://dn720305.ca.archive.org/0/items/opm-wedding-songs-vol.-2-album/08%20Forevermore.mp3" },
+   { title: "Forevermore - Juris", src: "https://dn711104.ca.archive.org/0/items/3rsradio/22_Forevermore.mp3" },
   { title: "Sana'y Wala Nang Wakas", src: "https://dn720305.ca.archive.org/0/items/opm-wedding-songs-vol.-2-album/07%20Sana%27y%20Wala%20Nang%20Wakas.mp3" },
   { title: "Magpakailanpaman", src: "https://dn720305.ca.archive.org/0/items/opm-wedding-songs-vol.-2-album/06%20Magpakailanpaman.mp3" },
   { title: "Pangako Sa 'Yo", src: "https://dn720305.ca.archive.org/0/items/opm-wedding-songs-vol.-2-album/05%20Pangako%20Sa%20%27Yo.mp3" },
@@ -52,32 +52,27 @@ const playlist = [
    { title: "Hanggang Kailan", src: "https://dn721609.ca.archive.org/0/items/michael-pangilinan-michael-2016/02%20-%20Michael%20Pangilinan%20-%20Hanggang%20Kailan-0bc81f46.mp3" },
   { title: "Bakit Ba Ikaw", src: "https://dn721609.ca.archive.org/0/items/michael-pangilinan-michael-2016/09%20-%20Michael%20Pangilinan%20-%20Bakit%20Ba%20Ikaw-99a61f78.mp3" },
   { title: "Kung Sakali", src: "https://dn721609.ca.archive.org/0/items/michael-pangilinan-michael-2016/10%20-%20Michael%20Pangilinan%20-%20Kung%20Sakali-ad2bd3bb.mp3" },
-  { title: "Patuloy Ang Pangarap - Angeline Quinto", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Patuloy+Ang+Pangarap+-+Angeline+Quinto+(Music+Video).mp3" },
-  { title: "Gusto Ko Nang Bumitaw - from The Broken Marriage Vow", src: "https://archive.org/details/3rsradio/31_Gusto+Ko+Nang+Bumitaw+-+from+The+Broken+Marriage+Vow.mp3" },
-  { title: "Maybe This Time", src: "https://archive.org/details/3rsradio/42_Maybe+This+Time+-+From+Maybe+This+Time.mp3" },
-  { title: "Kapag Ako Ay Nagmahal - From Write About Love", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/19_Kapag+Ako+Ay+Nagmahal+-+From+Write+About+Love.mp3" },
+  { title: "Musika - Dionela", src: "https://dn711104.ca.archive.org/0/items/3rsradio/02_Musika.mp3" },
+  { title: "panaginip - iluna", src: "https://dn711104.ca.archive.org/0/items/3rsradio/03_panaginip.mp3" },
+  { title: "A Love to Last a Lifetime - Juris", src: "https://dn711104.ca.archive.org/0/items/3rsradio/04_A%20Love%20to%20Last%20a%20Lifetime.mp3" },
+  { title: "Pusong Bato - Jovit Baldomino", src: "https://dn711104.ca.archive.org/0/items/3rsradio/05_Pusong%20Bato.mp3" },
   { title: "One Last Song", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/03_One+Last+Song.mp3" },
-  { title: "Like a Rose", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/01_Like+a+Rose.mp3" },
-  { title: "Kung Pwede Lang Sana - Bugoy Drilon", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Bugoy+Drilon+-+Kung+Pwede+Lang+Sana+(Audio)+++Paano+Na+Kaya.mp3" },
-  { title: "Exchange of Hearts - David Slater", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/David++Slater+-+Exchange+of+Hearts+(+Lyrics+).mp3" },
-  { title: "King And Queen of Heart - David Pomeranz", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/David+Pomeranz+-+King+And+Queen+Of+Heart+(Lyrics).mp3" },
-  { title: "If I Ever Fall In Love Again - Kenny Rogers & Anne Murray", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/IF+I+EVER+FALL+IN+LOVE+AGAIN+-+Kenny+Rogers+duet+Anne+Murray+(Lyrics+Video).mp3" },
-  { title: "My Valentine - Jim Brickman, Martina McBride", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/Jim+Brickman%2C+Martina+McBride+-+My+Valentine+(Lyrics).mp3" },
-  { title: "Borrowed Time - Cueshe", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/Cueshe+-+Borrowed+Time+(Lyrics).mp3" },
-  { title: "Sorry - Cuesh", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/Cuesh%C3%A9+-+Sorry+Lyrics+%F0%9F%8E%B6.mp3" },
-  { title: "Swear It Again - Westlife", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/Swear+It+Again+-+Westlife+(Lyrics).mp3" },
-  { title: "Take Me to Your Heart - Michael Learns to Rock", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/Take+Me+to+Your+Heart+-+Michael+Learns+To+Rock+(+Video+Lyrics+Official).mp3" },
-  { title: "You and I - Kenny Rogers", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/ENGLISH+LOVESONG+%EF%BC%8820songs%EF%BC%89/YOU+AND+I+-++KENNY+ROGERS+lyrics+(HD).mp3" },
-  { title: "Everything I Own - Michael Pangilinan", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Everything+I+Own+-+Michael+Pangilinan+(Lyrics).mp3" },
-  { title: "Gusto Kita - Angeline Quinto", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Gusto+Kita+-+Angeline+Quinto+(Lyrics).mp3" },
-  { title: "Hanggang Kailan - Michael Pangilinan", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Hanggang+Kailan+-+Michael+Pangilinan+(Lyrics).mp3" },
-  { title: "Hindi Na Bale - Bugoy Drilon", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Hindi+Na+Bale+-+Bugoy+Drilon+(Lyrics).mp3" },
-  { title: "Huwag Ka Lang Mawawala - Bugoy Drilon x Liezel Garcia", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Huwag+Ka+Lang+Mawawala+-+Bugoy+Drilon+x+Liezel+Garcia+(Lyrics).mp3" },
-  { title: "Ikaw At Ako - Moira Dela Torre x Jason Marvin", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Ikaw+At+Ako+-+Moira+Dela+Torre+x+Jason+Marvin+(Lyrics)++Hello%2C+Love%2C+Goodbye+OST.mp3" },
-  { title: "Ikaw Lang Ang Mamahalin - Erik Santos (cover)", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Ikaw+Lang+Ang+Mamahalin+(cover)+by+Erik+Santos.mp3" },
-  { title: "Ikaw Pa Rin - Moira Dela Torre ft. Erik Santos", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Ikaw+Pa+Rin+-+Moira+Dela+Torre+ft.+Erik+Santos+(Lyrics).mp3" },
-  { title: "Kung Sakali - Michael Pangilinan", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Kung+Sakali+-+Michael+Pangilinan+(Lyrics).mp3" },
-  { title: "Paano Na Kaya - Bugoy Drilon", src: "https://archive.org/details/3rsradio/5.+LOVE+SONGS+ENGLISH+-+TAGALOG%EF%BC%88121songs%EF%BC%89/Paano+Na+Kaya+-+Bugoy+Drilon++(Lyrics).mp3" },
+  { title: "On the Wings of Love - James Reid,Nadine Lustre", src: "https://dn711104.ca.archive.org/0/items/3rsradio/07_On%20the%20Wings%20of%20Love.mp3" },
+  { title: " Dahil Sa'Yo - Inigo Pascual", src: "https://dn711104.ca.archive.org/0/items/3rsradio/08_Dahil%20Sa%27Yo.mp3" },
+  { title: "Dying Inside To Hold You - From ' All Of You' Official Soundtrack - Darren Espanto", src: "https://ia803107.us.archive.org/32/items/3rsradio/12_Dying%20Inside%20To%20Hold%20You%20-%20From%20%20All%20Of%20You%20Official%20Soundtrack.mp3" },
+  { title: "On the Wings of Love - Kyla", src: "https://dn711104.ca.archive.org/0/items/3rsradio/13_On%20the%20Wings%20of%20Love.mp3" },
+  { title: "Starting over Again - Toni Gonzaga", src: "https://dn711104.ca.archive.org/0/items/3rsradio/14_Starting%20over%20Again.mp3" },
+  { title: "Kunin Mo Na Ang Lahat Sa Akin - Angeline Quinto", src: "https://dn711104.ca.archive.org/0/items/3rsradio/17_Kunin%20Mo%20Na%20Ang%20Lahat%20Sa%20Akin.mp3" },
+  { title: "To Love Again - Daryl Ong", src: "https://dn711104.ca.archive.org/0/items/3rsradio/18_To%20Love%20Again.mp3" },
+  { title: "Nothing's Gonna Stop Us Now - From 'Crazy Beautiful You' - Morissette,Daniel Padilla", src: "https://dn711104.ca.archive.org/0/items/3rsradio/21_Nothing%27s%20Gonna%20Stop%20Us%20Now%20-%20From%20Crazy%20Beautiful%20You.mp3" },
+  { title: "Nahuhulog Na Sa'yo - Noah Alejandre", src: "https://ia903107.us.archive.org/32/items/3rsradio/01_Nahuhulog%20Na%20Sa%27yo.mp3" },
+  { title: "Till I Met You - Angeline Quinto", src: "https://dn711104.ca.archive.org/0/items/3rsradio/26_Till%20I%20Met%20You.mp3" },
+  { title: "Dahil Ikaw - True Faith", src: "https://dn711104.ca.archive.org/0/items/3rsradio/29_Dahil%20Ikaw.mp3" },
+  { title: "Ikaw - Yeng Constantino", src: "https://dn711104.ca.archive.org/0/items/3rsradio/30_Ikaw.mp3" },
+  { title: "Gusto Ko Nang Bumitaw - from 'The Broken Marriage Vow' - Morissette", src: "https://dn711104.ca.archive.org/0/items/3rsradio/31_Gusto%20Ko%20Nang%20Bumitaw%20-%20from%20The%20Broken%20Marriage%20Vow.mp3" },
+  { title: "Ikot - Sarah Geronimo", src: "https://dn711104.ca.archive.org/0/items/3rsradio/32_Ikot-Ikot.mp3" },
+  { title: "Mahal Ko O Mahal Ako - KZ Tandingan", src: "https://ia803107.us.archive.org/32/items/3rsradio/33_Mahal%20Ko%20O%20Mahal%20Ako.mp3" },
+  { title: "Isang Araw - Kaye Cal", src: "https://dn711104.ca.archive.org/0/items/3rsradio/35_Isang%20Araw.mp3" },
   { title: "Ikaw Lamang", src: "https://dn710702.ca.archive.org/0/items/OPMWeddingSongsVol1/06.%20Ikaw%20Lamang.mp3" }
 ];
 
@@ -92,7 +87,7 @@ function loadSong(i) {
 
 // --- VOICE FUNCTIONS ---
 function welcomeVoice() {
-  const msg = new SpeechSynthesisUtterance("Welcome to Rage Radio. Enjoy the music.");
+  const msg = new SpeechSynthesisUtterance("Welcome to Radio Rage. Enjoy the music.");
   msg.lang = "en-US";
   speechSynthesis.speak(msg);
 }
