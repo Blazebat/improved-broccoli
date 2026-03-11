@@ -3,39 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rage Radio | OPM Hits</title>
+    <title>Rage Radio | Tuner</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="radio-container">
-        <div id="onAirBox" class="on-air-box">OFF AIR</div>
-        <img src="logo.png" alt="Rage Radio" class="site-logo">
-        <p class="tagline">Feel the Energy</p>
-
-        <div class="visualizer-container">
-            <canvas id="eq" width="300" height="120"></canvas>
+    <div class="tuner-body">
+        <div class="tuner-screen">
+            <div id="onAirBox" class="on-air-box">OFF AIR</div>
+            <div class="frequency-display">
+                <span id="currentFreq">READY</span>
+                <span class="unit">MHz</span>
+            </div>
+            <div class="station-name" id="title">Select Station</div>
+            
+            <div class="visualizer-container">
+                <canvas id="eq" width="280" height="60"></canvas>
+            </div>
         </div>
 
-        <h2 id="title">Click Play to Begin</h2>
+        <div class="tuner-controls">
+            <div class="knob-section">
+                <label for="stationSelect">TUNING</label>
+                <select id="stationSelect" class="dial-dropdown">
+                    <option value="" disabled selected>Select a frequency...</option>
+                    </select>
+            </div>
 
-        <div class="controls">
-            <button id="playBtn" class="btn">PLAY</button>
-            <button id="pauseBtn" class="btn">PAUSE</button>
+            <div class="playback-btns">
+                <button id="playBtn" class="round-btn">PLAY</button>
+                <button id="pauseBtn" class="round-btn">STOP</button>
+            </div>
         </div>
 
-        <button id="requestBtn" class="btn request-btn">REQUEST A SONG</button>
+        <button id="requestBtn" class="request-btn">SIGNAL REQUEST</button>
     </div>
 
-    <div id="requestModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h3>SONG REQUEST</h3>
-            <input type="text" id="requestInput" placeholder="Song Title - Artist">
-            <button id="sendRequest" class="btn">SEND TO MESSENGER</button>
-        </div>
-    </div>
-
+    <audio id="dialSfx" src="dial.mp3"></audio>
     <audio id="audio" crossorigin="anonymous"></audio>
+
     <script src="script.js"></script>
 </body>
 </html>
