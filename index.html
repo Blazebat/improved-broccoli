@@ -1,36 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rage Radio Philippines</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { background: #1a1a1a; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Courier New', monospace; }
-        .radio-frame { width: 350px; background: #332d2d; padding: 20px; border: 8px solid #5c4a3a; border-radius: 20px; box-shadow: 0 10px 30px #000; text-align: center; }
-        
-        /* The Tuning Display */
-        .tuner-glass { background: #111; border: 2px solid #5c4a3a; height: 80px; position: relative; overflow: hidden; margin-bottom: 20px; }
-        .needle { position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background: #ff4500; transition: left 0.5s ease; }
-        
-        .station-info { color: #d4a373; font-weight: bold; margin-bottom: 10px; }
-        
-        /* Big Retro Controls */
-        .knobs { display: flex; justify-content: space-around; }
-        .knob { width: 60px; height: 60px; background: #5c4a3a; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; border: 4px solid #332d2d; }
-        .knob:active { transform: scale(0.9); }
+        body { margin: 0; background: #0f0f12; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .player { width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); padding: 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        .display { font-size: 1.1rem; font-weight: 600; margin-bottom: 30px; color: #3b82f6; height: 60px; display: flex; align-items: center; justify-content: center; word-break: break-all; }
+        .controls { display: flex; justify-content: center; gap: 40px; }
+        .btn { width: 80px; height: 80px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; border: 2px solid #333; font-size: 2rem; }
+        .btn:active { transform: scale(0.9); background: #3b82f6; }
+        .status { font-size: 0.8rem; color: #666; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div class="radio-frame">
-    <div class="tuner-glass">
-        <div class="needle" id="needle"></div>
-        <div style="position:absolute; top:30px; width:100%; color:#555;">87.5 — 89.9 — 91.5 — 107.5</div>
+<div class="player">
+    <div class="display" id="display">POWER OFF</div>
+    <div class="controls">
+        <div class="btn" id="pwrBtn" onclick="togglePower()">⏻</div>
+        <div class="btn" id="scanBtn" onclick="scanNext()">↻</div>
     </div>
-    
-    <div class="station-info" id="name">RADIO OFF</div>
-    
-    <div class="knobs">
-        <div class="knob" onclick="togglePower()">POWER</div>
-        <div class="knob" onclick="nextStation()">TUNE</div>
-    </div>
+    <div class="status" id="status">Ready</div>
 </div>
 
 <script>
@@ -101,35 +94,38 @@
     { name: "WUSL Power 99", url: "https://cloud.revma.ihrhls.com/zc2009?rj-org=n36b-e2&rj-ttl=5&rj-tok=AAABl_JPgewAZarEEPLHkZkMuQ", freq: "Digital" }
     ];
 
-    const dialSfx = new Audio('dial.mp3');
     const audio = new Audio();
+    const dial = new Audio('dial.mp3');
     let isOn = false;
+    let hls = new Hls();
 
     function togglePower() {
         isOn = !isOn;
-        if (isOn) {
-            nextStation();
-        } else {
-            audio.pause();
-            dialSfx.pause();
-            document.getElementById('name').innerText = "RADIO OFF";
-            document.getElementById('needle').style.left = "50%";
-        }
+        document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#222";
+        document.getElementById('display').innerText = isOn ? "INIT..." : "POWER OFF";
+        if (isOn) scanNext();
+        else { audio.pause(); audio.src = ""; dial.pause(); }
     }
 
-    function nextStation() {
+    function scanNext() {
         if (!isOn) return;
-        
-        dialSfx.play();
+        dial.play().catch(()=>{});
         const s = stations[Math.floor(Math.random() * stations.length)];
-        
-        // Move Needle (percentage calc)
-        const pos = ((s.freq - 80) / 30) * 100;
-        document.getElementById('needle').style.left = pos + "%";
-        
-        document.getElementById('name').innerText = s.name;
-        audio.src = s.url;
-        audio.play().then(() => dialSfx.pause());
+        document.getElementById('display').innerText = s.name;
+        document.getElementById('status').innerText = "Tuning...";
+
+        if (s.url.includes('.m3u8')) {
+            hls.loadSource(s.url);
+            hls.attachMedia(audio);
+            audio.play().catch(()=>{});
+        } else {
+            audio.src = s.url;
+            audio.load();
+            audio.play().catch(()=>{});
+        }
+
+        let timer = setTimeout(() => { if (audio.paused) scanNext(); }, 6000);
+        audio.onplaying = () => { clearTimeout(timer); dial.pause(); document.getElementById('status').innerText = "LIVE"; };
     }
 </script>
 </body>
