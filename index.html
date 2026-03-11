@@ -8,9 +8,13 @@
     <style>
         body { margin: 0; background: #0f0f12; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
         .player { width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); padding: 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        
+        /* Logo Styling */
+        .logo { width: 80px; height: 80px; margin-bottom: 20px; border-radius: 15px; object-fit: cover; }
+        
         .display { font-size: 1.1rem; font-weight: 600; margin-bottom: 30px; color: #3b82f6; height: 60px; display: flex; align-items: center; justify-content: center; word-break: break-all; }
         .controls { display: flex; justify-content: center; gap: 40px; }
-        .btn { width: 80px; height: 80px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; border: 2px solid #333; font-size: 2rem; }
+        .btn { width: 80px; height: 80px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; border: 2px solid #333; font-size: 0.9rem; font-weight: bold; }
         .btn:active { transform: scale(0.9); background: #3b82f6; }
         .status { font-size: 0.8rem; color: #666; margin-top: 20px; }
     </style>
@@ -18,10 +22,11 @@
 <body>
 
 <div class="player">
-    <div class="display" id="display">POWER OFF</div>
+    <img src="logo.png" alt="Rage Radio Logo" class="logo">
+    <div class="display" id="display">OFF</div>
     <div class="controls">
-        <div class="btn" id="pwrBtn" onclick="togglePower()">⏻</div>
-        <div class="btn" id="scanBtn" onclick="scanNext()">↻</div>
+        <div class="btn" id="pwrBtn" onclick="togglePower()">ON/OFF</div>
+        <div class="btn" id="scanBtn" onclick="scanNext()">SCAN</div>
     </div>
     <div class="status" id="status">Ready</div>
 </div>
@@ -102,13 +107,20 @@
     function togglePower() {
         isOn = !isOn;
         document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#222";
-        document.getElementById('display').innerText = isOn ? "INIT..." : "POWER OFF";
-        if (isOn) scanNext();
-        else { audio.pause(); audio.src = ""; dial.pause(); }
+        if (!isOn) {
+            audio.pause();
+            audio.src = "";
+            dial.pause();
+            document.getElementById('display').innerText = "OFF";
+            document.getElementById('status').innerText = "Ready";
+        } else {
+            scanNext();
+        }
     }
 
     function scanNext() {
         if (!isOn) return;
+        
         dial.play().catch(()=>{});
         const s = stations[Math.floor(Math.random() * stations.length)];
         document.getElementById('display').innerText = s.name;
