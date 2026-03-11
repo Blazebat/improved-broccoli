@@ -6,76 +6,18 @@
     <title>Rage Radio Philippines</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { 
-            margin: 0; 
-            background: #0f0f12; 
-            color: #fff; 
-            font-family: 'Segoe UI', sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
-        .player { 
-            width: 350px; 
-            background: #1a1a1e; 
-            padding: 25px; 
-            border-radius: 40px; 
-            text-align: center; 
-            border: 2px solid #333; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-        }
-        .logo { 
-            width: 100px; 
-            height: 100px; 
-            border-radius: 20px; 
-            margin-bottom: 15px; 
-            object-fit: cover; 
-        }
-        .display { 
-            font-size: 1.1rem; 
-            font-weight: bold; 
-            color: #3b82f6; 
-            margin: 15px 0; 
-            height: 30px; 
-            overflow: hidden; 
-            white-space: nowrap; 
-        }
-        canvas { 
-            width: 100%; 
-            height: 80px; 
-            margin: 10px 0; 
-            border-radius: 10px; 
-            background: #000; 
-        }
-        .controls { 
-            display: flex; 
-            justify-content: center; 
-            gap: 20px; 
-            margin-top: 20px; 
-        }
-        .btn { 
-            width: 70px; 
-            height: 70px; 
-            border-radius: 50%; 
-            border: none; 
-            cursor: pointer; 
-            color: white; 
-            font-weight: bold; 
-            transition: 0.3s; 
-            background: #333; 
-        }
-        .btn.active { 
-            background: #3b82f6; 
-            box-shadow: 0 0 20px #3b82f6; 
-        }
+        body { margin: 0; background: #0f0f12; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .player { width: 350px; background: #1a1a1e; padding: 25px; border-radius: 40px; text-align: center; border: 2px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .display { font-size: 1rem; font-weight: bold; color: #3b82f6; margin: 15px 0; height: 40px; overflow: hidden; }
+        canvas { width: 100%; height: 80px; background: #000; border-radius: 10px; }
+        .controls { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
+        .btn { width: 70px; height: 70px; border-radius: 50%; border: none; cursor: pointer; color: white; background: #333; }
+        .btn.active { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; }
     </style>
 </head>
 <body>
 
 <div class="player">
-    <img src="logo.png" alt="Logo" class="logo" onerror="this.style.display='none'">
     <div class="display" id="display">POWER OFF</div>
     <canvas id="visualizer"></canvas>
     <div class="controls">
@@ -88,26 +30,26 @@
     const stations = [
     { name: "Clubmix", url: "https://stream.zeno.fm/d42hdvx96zhvv.mp3", freq: "105.9" },
     { name: "Emotions", url: "https://stream.zeno.fm/03v7z8edgphvv.mp3", freq: "Online" },
-    { name: "Rage Music Philippines", url: "https://stream.zeno.fm/q1n2wyfs7x8uv.mp3", freq: "N/A" },
-    { name: "Scream Radio", url: "https://stream.zeno.fm/c3z135w8zxhvv.mp3", freq: "N/A" },
-    { name: "Vibe Radio", url: "https://stream.zeno.fm/4k8qf4raqy8uv.mp3", freq: "N/A" },
-    { name: "Hot Hiphop N RnB", url: "https://stream.zeno.fm/qrhuqbnm208uv.mp3", freq: "N/A" },
+    { name: "Rage Music Philippines", url: "https://stream.zeno.fm/q1n2wyfs7x8uv.mp3", freq: "Digital" },
+    { name: "Scream Radio", url: "https://stream.zeno.fm/c3z135w8zxhvv.mp3", freq: "Digital" },
+    { name: "Vibe Radio", url: "https://stream.zeno.fm/4k8qf4raqy8uv.mp3", freq: "Digital" },
+    { name: "Hot Hiphop N RnB", url: "https://stream.zeno.fm/qrhuqbnm208uv.mp3", freq: "Digital" },
     { name: "iMix Radio", url: "https://stream.zeno.fm/iiigesdzikuvv.mp3", freq: "Digital" },
     { name: "Spirit FM Batangas", url: "https://stream.zeno.fm/zb2c835zahruv.mp3", freq: "91.9" },
-    { name: "Brigada News FM Batangas", url: "https://batangasstream.brigadanews.ph/", freq: "N/A" },
-    { name: "Radyo Natin Lemery", url: "https://xcite.radyonatinfm.com:8020/lemery", freq: "N/A" },
+    { name: "Brigada News FM Batangas", url: "https://batangasstream.brigadanews.ph/", freq: "Digital" },
+    { name: "Radyo Natin Lemery", url: "https://xcite.radyonatinfm.com:8020/lemery", freq: "Digital" },
     { name: "88.7 DCG FM", url: "https://stream.zeno.fm/7neg6f1hbm0uv.mp3", freq: "88.7" },
     { name: "My City Radio", url: "https://stream.zeno.fm/4qmadmb5feruv.mp3", freq: "Online" },
-    { name: "Radyo Natin Nationwide", url: "https://in-icecast.eradioportal.com:8443/radyo_natin", freq: "N/A" },
-    { name: "Green Giant FM", url: "https://stream.greengiantfm.com/stream", freq: "N/A" },
-    { name: "MOR Entertainment", url: "https://stream.zeno.fm/0ha8ftewqp8uv.mp3", freq: "N/A" },
-    { name: "WXB 102", url: "https://edge.mixlr.com/channel/lldmm", freq: "N/A" },
-    { name: "IDMZ Sayaw Pinoy", url: "https://cast3.asurahosting.com/proxy/idmzsayawpinoy/stream", freq: "N/A" },
-    { name: "Myx Radio", url: "https://das-edge13-live365-dal02.cdnstream.com/a06369", freq: "N/A" },
+    { name: "Radyo Natin Nationwide", url: "https://in-icecast.eradioportal.com:8443/radyo_natin", freq: "Digital" },
+    { name: "Green Giant FM", url: "https://stream.greengiantfm.com/stream", freq: "Digital" },
+    { name: "MOR Entertainment", url: "https://stream.zeno.fm/0ha8ftewqp8uv.mp3", freq: "Digital" },
+    { name: "WXB 102", url: "https://edge.mixlr.com/channel/lldmm", freq: "Digital" },
+    { name: "IDMZ Sayaw Pinoy", url: "https://cast3.asurahosting.com/proxy/idmzsayawpinoy/stream", freq: "Digital" },
+    { name: "Myx Radio", url: "https://das-edge13-live365-dal02.cdnstream.com/a06369", freq: "Digital" },
     { name: "Republika ni Juan 87.5", url: "http://58.97.187.52:5001/fm1", freq: "87.5" },
-    { name: "Radyo Katipunan", url: "https://stream.zeno.fm/dlej297l1gtvv.mp3", freq: "N/A" },
+    { name: "Radyo Katipunan", url: "https://stream.zeno.fm/dlej297l1gtvv.mp3", freq: "Digital" },
     { name: "Jam 88.3", url: "https://streaming.brol.tech/rtfmlounge", freq: "88.3" },
-    { name: "Adventist World Radio (AWR 89.1)", url: "https://stream11.awr.live/listen/awrmanila/broadcast", freq: "89.1" },
+    { name: "Adventist World Radio (AWR 89.1)", url: "https://stream11.awr.live/listeDigitalwrmanila/broadcast", freq: "89.1" },
     { name: "Magic 89.9", url: "https://stream.zeno.fm/hcbrvvfd938uv.mp3", freq: "89.9" },
     { name: "90.7 Love Radio", url: "https://azura.loveradio.com.ph/listen/love_radio_manila/radio.mp3", freq: "90.7" },
     { name: "91.5 Win Radio", url: "https://stream.zeno.fm/2ss1hgnu6hhvv.mp3", freq: "91.5" },
@@ -126,39 +68,38 @@
     { name: "105.1 Brigada News FM", url: "https://makatistream.brigadanews.ph/", freq: "105.1" },
     { name: "106.7 Energy FM", url: "https://ph-icecast-win.eradioportal.com:8443/energyfm_manila", freq: "106.7" },
     { name: "Wish 107.5", url: "https://radio.wish1075.com/web/stream/wish.m3u8", freq: "107.5" },
-    { name: "Bible Radio", url: "https://stream.radio.co/se9de95c10/low", freq: "N/A" },
-    { name: "Super Radyo DZBB", url: "https://gsattv.akamaized.net/live/media0/radiodzbb/Fairplay/radiodzbb.m3u8", freq: "N/A" },
-    { name: "DZMM Radyo Patrol 630 (International Feed)", url: "https://stream.zeno.fm/yaksrqvb35duv.mp3", freq: "N/A" },
-    { name: "DZMM Radyo Patrol 630 (Local Feed)", url: "http://us1.amfmph.com:8852/stream", freq: "N/A" },
-    { name: "DZRH", url: "https://dzrh-azura.mmg.com.ph/listen/dzrh_manila/radio.mp3", freq: "N/A" },
-    { name: "702 DZAS", url: "http://sg-icecast.eradioportal.com:8000/febc_dzas", freq: "N/A" },
-    { name: "Radyo Pilipinas - Radyo Publiko", url: "http://58.97.187.52:5001/rp1", freq: "N/A" },
-    { name: "DWWW 774", url: "https://stream.zeno.fm/nt60rvqvpy5tv.mp3", freq: "N/A" },
-    { name: "DZRJ Radyo Bandido", url: "http://111.125.87.226:8000/dzrjam", freq: "N/A" },
-    { name: "Veritas 846", url: "http://icecast.eradioportal.com:8000/radyo-veritas-846", freq: "N/A" },
-    { name: "DWIZ 882", url: "http://142.44.212.114:9079/stream", freq: "N/A" },
-    { name: "Sports Radio", url: "https://ssl.radyoph.com:8000/rp2", freq: "N/A" },
-    { name: "INC Radio", url: "https://stream-243529.castr.net/6842a712b68c56f675d988f1/live_b60a96e056fc11f084c05f5d0649296b/index.fmp4.m3u8", freq: "N/A" },
-    { name: "Radyo Magasin", url: "http://58.97.187.52:5007/rp3", freq: "N/A" },
-    { name: "DWXI 1314", url: "https://in-icecast.eradioportal.com:8443/dwxi-streaming", freq: "N/A" },
-    { name: "ESPN Radio", url: "http://live.amperwave.net/direct/espn-network-48?source=v7player", freq: "N/A" },
+    { name: "Bible Radio", url: "https://stream.radio.co/se9de95c10/low", freq: "Digital" },
+    { name: "Super Radyo DZBB", url: "https://gsattv.akamaized.net/live/media0/radiodzbb/Fairplay/radiodzbb.m3u8", freq: "Digital" },
+    { name: "DZMM Radyo Patrol 630 (International Feed)", url: "https://stream.zeno.fm/yaksrqvb35duv.mp3", freq: "Digital" },
+    { name: "DZMM Radyo Patrol 630 (Local Feed)", url: "http://us1.amfmph.com:8852/stream", freq: "Digital" },
+    { name: "DZRH", url: "https://dzrh-azura.mmg.com.ph/listen/dzrh_manila/radio.mp3", freq: "Digital" },
+    { name: "702 DZAS", url: "http://sg-icecast.eradioportal.com:8000/febc_dzas", freq: "Digital" },
+    { name: "Radyo Pilipinas - Radyo Publiko", url: "http://58.97.187.52:5001/rp1", freq: "Digital" },
+    { name: "DWWW 774", url: "https://stream.zeno.fm/nt60rvqvpy5tv.mp3", freq: "Digital" },
+    { name: "DZRJ Radyo Bandido", url: "http://111.125.87.226:8000/dzrjam", freq: "Digital" },
+    { name: "Veritas 846", url: "http://icecast.eradioportal.com:8000/radyo-veritas-846", freq: "Digital" },
+    { name: "DWIZ 882", url: "http://142.44.212.114:9079/stream", freq: "Digital" },
+    { name: "Sports Radio", url: "https://ssl.radyoph.com:8000/rp2", freq: "Digital" },
+    { name: "INC Radio", url: "https://stream-243529.castr.net/6842a712b68c56f675d988f1/live_b60a96e056fc11f084c05f5d0649296b/index.fmp4.m3u8", freq: "Digital" },
+    { name: "Radyo Magasin", url: "http://58.97.187.52:5007/rp3", freq: "Digital" },
+    { name: "DWXI 1314", url: "https://in-icecast.eradioportal.com:8443/dwxi-streaming", freq: "Digital" },
+    { name: "ESPN Radio", url: "http://live.amperwave.net/direct/espn-network-48?source=v7player", freq: "Digital" },
     { name: "WZEB Power 101.7", url: "https://ice66.securenetsystems.net/WZEB", freq: "101.7" },
     { name: "WMGC-FM 105.1 The Bounce", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WMGCFMAAC.aac", freq: "105.1" },
     { name: "WQHT 97.1 Hot 97", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTFMAAC.aac", freq: "97.1" },
     { name: "WYRB Power 106.3", url: "https://ais-sa8.cdnstream1.com/p0zbr98vu6z/ct0ziwywwym", freq: "106.3" },
     { name: "WWRX Jammin 107.7", url: "https://crystalout.surfernetwork.com:8001/WWRX_MP3", freq: "107.7" },
-    { name: "W233BF Streetz 945", url: "https://us1.streamingpulse.com/ssl/7045", freq: "N/A" },
+    { name: "W233BF Streetz 945", url: "https://us1.streamingpulse.com/ssl/7045", freq: "Digital" },
     { name: "96.7 KCAL Rocks", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/KCALFMAAC.aac", freq: "96.7" },
-    { name: "WUSL Power 99", url: "https://cloud.revma.ihrhls.com/zc2009?rj-org=n36b-e2&rj-ttl=5&rj-tok=AAABl_JPgewAZarEEPLHkZkMuQ", freq: "N/A" },
-    { name: "SDTV Radio", url: "https://usa2.server2028.com/hls/sdtv_radio/live.m3u8", freq: "N/A" },
+    { name: "WUSL Power 99", url: "https://cloud.revma.ihrhls.com/zc2009?rj-org=n36b-e2&rj-ttl=5&rj-tok=AAABl_JPgewAZarEEPLHkZkMuQ", freq: "Digital" },
+    { name: "SDTV Radio", url: "https://usa2.server2028.com/hls/sdtv_radio/live.m3u8", freq: "Digital" }
     ];
 
     let audio = new Audio();
-    let dial = new Audio('dial.mp3'); // make sure dial.mp3 exists in same folder
     let hls = null;
     let ctx, analyser, source;
     let isOn = false;
-    let currentStation = null;
+    let watchDog = null;
 
     function initAudio() {
         if (!ctx) {
@@ -168,118 +109,62 @@
             source = ctx.createMediaElementSource(audio);
             source.connect(analyser);
             analyser.connect(ctx.destination);
+            draw();
         }
-        if (ctx.state === 'suspended') ctx.resume();
     }
 
-    function togglePower() {
-        isOn = !isOn;
-        const pwrBtn = document.getElementById('pwrBtn');
-        pwrBtn.classList.toggle('active', isOn);
-
-        if (!isOn) {
-            audio.pause();
-            if (hls) hls.destroy();
-            hls = null;
-            dial.pause();
-            document.getElementById('display').innerText = "POWER OFF";
-        } else {
-            initAudio();
-            scanNext();
-        }
+    function stop() {
+        clearTimeout(watchDog);
+        audio.pause();
+        if (hls) { hls.destroy(); hls = null; }
     }
 
     function scanNext() {
         if (!isOn) return;
-
-        // Stop previous playback cleanly
-        audio.pause();
-        if (hls) {
-            hls.detachMedia();
-            hls.destroy();
-            hls = null;
-        }
-
-        dial.currentTime = 0;
-        dial.play().catch(e => console.log("Dial play error:", e));
-
+        stop();
         const s = stations[Math.floor(Math.random() * stations.length)];
-        currentStation = s;
         document.getElementById('display').innerText = "TUNING: " + s.name;
 
-        setTimeout(() => {
-            try {
-                if (s.url.includes('.m3u8')) {
-                    hls = new Hls();
-                    hls.loadSource(s.url);
-                    hls.attachMedia(audio);
+        // Set Watchdog: If no audio in 6 seconds, skip
+        watchDog = setTimeout(() => {
+            console.warn("Dead link detected: " + s.name);
+            scanNext();
+        }, 6000);
 
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                        audio.play()
-                            .then(() => {
-                                dial.pause();
-                                document.getElementById('display').innerText = s.name + " (" + s.freq + ")";
-                            })
-                            .catch(err => showError(err, s));
-                    });
-
-                    hls.on(Hls.Events.ERROR, (event, data) => {
-                        if (data.fatal) showError(data.type + " - " + data.details, s);
-                    });
-                } else {
-                    audio.src = s.url;
-                    audio.load();
-                    audio.play()
-                        .then(() => {
-                            dial.pause();
-                            document.getElementById('display').innerText = s.name + " (" + s.freq + ")";
-                        })
-                        .catch(err => showError(err, s));
-                }
-            } catch (err) {
-                showError(err.message, s);
-            }
-        }, 800);
-
-        draw();
+        if (s.url.includes('.m3u8')) {
+            hls = new Hls();
+            hls.loadSource(s.url);
+            hls.attachMedia(audio);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => audio.play().then(() => clearTimeout(watchDog)));
+        } else {
+            audio.src = s.url;
+            audio.play().then(() => clearTimeout(watchDog));
+        }
     }
 
-    function showError(msg, station) {
-        console.error("Playback error:", msg, station?.url);
-        document.getElementById('display').innerText = "ERROR - Try Scan Again";
-        dial.pause();
+    function togglePower() {
+        isOn = !isOn;
+        document.getElementById('pwrBtn').classList.toggle('active', isOn);
+        if (!isOn) { stop(); document.getElementById('display').innerText = "POWER OFF"; }
+        else { initAudio(); ctx.resume(); scanNext(); }
     }
 
     function draw() {
         const canvas = document.getElementById('visualizer');
         const ctx2d = canvas.getContext('2d');
-        const bufferLength = analyser ? analyser.frequencyBinCount : 0;
-
+        const data = new Uint8Array(analyser.frequencyBinCount);
         function render() {
-            if (!isOn || !analyser) return;
+            if (!isOn) return;
             requestAnimationFrame(render);
-
-            const dataArray = new Uint8Array(bufferLength);
-            analyser.getByteFrequencyData(dataArray);
-
-            ctx2d.fillStyle = '#000';
-            ctx2d.fillRect(0, 0, canvas.width, canvas.height);
-
-            let x = 0;
-            for (let i = 0; i < bufferLength; i++) {
-                const height = dataArray[i] / 2;
-                ctx2d.fillStyle = `rgb(59, 130, ${dataArray[i] + 100})`;
-                ctx2d.fillRect(x, canvas.height - height, 2, height);
-                x += 4;
+            analyser.getByteFrequencyData(data);
+            ctx2d.fillStyle = '#000'; ctx2d.fillRect(0,0,300,100);
+            for(let i=0; i<data.length; i++) {
+                ctx2d.fillStyle = '#3b82f6';
+                ctx2d.fillRect(i*4, 100-data[i]/2, 2, data[i]/2);
             }
         }
         render();
     }
-
-    // Optional: resume context on any interaction
-    document.addEventListener('click', () => {
-        if (ctx && ctx.state === 'suspended') ctx.resume();
-    }, { once: true });
 </script>
 </body>
 </html>
