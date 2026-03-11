@@ -2,28 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rage Radio Philippines</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { margin: 0; background: #0f0f12; color: #fff; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .player { width: 350px; background: #1a1a1e; padding: 25px; border-radius: 40px; text-align: center; border: 2px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .display { font-size: 1rem; font-weight: bold; color: #3b82f6; margin: 15px 0; height: 40px; overflow: hidden; }
-        canvas { width: 100%; height: 80px; background: #000; border-radius: 10px; }
-        .controls { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
-        .btn { width: 70px; height: 70px; border-radius: 50%; border: none; cursor: pointer; color: white; background: #333; }
-        .btn.active { background: #3b82f6; box-shadow: 0 0 20px #3b82f6; }
+        body { margin: 0; background: #0f0f12; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .player { width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); padding: 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        
+        /* Logo Styling */
+        .logo { width: 80px; height: 80px; margin-bottom: 20px; border-radius: 15px; object-fit: cover; }
+        
+        .display { font-size: 1.1rem; font-weight: 600; margin-bottom: 30px; color: #3b82f6; height: 60px; display: flex; align-items: center; justify-content: center; word-break: break-all; }
+        .controls { display: flex; justify-content: center; gap: 40px; }
+        .btn { width: 80px; height: 80px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; border: 2px solid #333; font-size: 0.9rem; font-weight: bold; }
+        .btn:active { transform: scale(0.9); background: #3b82f6; }
+        .status { font-size: 0.8rem; color: #666; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="player">
-    <div class="display" id="display">POWER OFF</div>
-    <canvas id="visualizer"></canvas>
+    <img src="logo.png" alt="Rage Radio Logo" class="logo">
+    <div class="display" id="display">OFF</div>
     <div class="controls">
-        <button class="btn" id="pwrBtn" onclick="togglePower()">POWER</button>
-        <button class="btn" id="scanBtn" onclick="scanNext()">SCAN</button>
+        <div class="btn" id="pwrBtn" onclick="togglePower()">ON/OFF</div>
+        <div class="btn" id="scanBtn" onclick="scanNext()">SCAN</div>
     </div>
+    <div class="status" id="status">Ready</div>
 </div>
 
 <script>
@@ -95,75 +100,45 @@
     { name: "SDTV Radio", url: "https://usa2.server2028.com/hls/sdtv_radio/live.m3u8", freq: "Digital" }
     ];
 
-    let audio = new Audio();
-    let hls = null;
-    let ctx, analyser, source;
+    const audio = new Audio();
+    const dial = new Audio('dial.mp3');
     let isOn = false;
-    let watchDog = null;
+    let hls = new Hls();
 
-    function initAudio() {
-        if (!ctx) {
-            ctx = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = ctx.createAnalyser();
-            analyser.fftSize = 256;
-            source = ctx.createMediaElementSource(audio);
-            source.connect(analyser);
-            analyser.connect(ctx.destination);
-            draw();
+    function togglePower() {
+        isOn = !isOn;
+        document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#222";
+        if (!isOn) {
+            audio.pause();
+            audio.src = "";
+            dial.pause();
+            document.getElementById('display').innerText = "OFF";
+            document.getElementById('status').innerText = "Ready";
+        } else {
+            scanNext();
         }
-    }
-
-    function stop() {
-        clearTimeout(watchDog);
-        audio.pause();
-        if (hls) { hls.destroy(); hls = null; }
     }
 
     function scanNext() {
         if (!isOn) return;
-        stop();
+        
+        dial.play().catch(()=>{});
         const s = stations[Math.floor(Math.random() * stations.length)];
-        document.getElementById('display').innerText = "TUNING: " + s.name;
-
-        // Set Watchdog: If no audio in 6 seconds, skip
-        watchDog = setTimeout(() => {
-            console.warn("Dead link detected: " + s.name);
-            scanNext();
-        }, 6000);
+        document.getElementById('display').innerText = s.name;
+        document.getElementById('status').innerText = "Tuning...";
 
         if (s.url.includes('.m3u8')) {
-            hls = new Hls();
             hls.loadSource(s.url);
             hls.attachMedia(audio);
-            hls.on(Hls.Events.MANIFEST_PARSED, () => audio.play().then(() => clearTimeout(watchDog)));
+            audio.play().catch(()=>{});
         } else {
             audio.src = s.url;
-            audio.play().then(() => clearTimeout(watchDog));
+            audio.load();
+            audio.play().catch(()=>{});
         }
-    }
 
-    function togglePower() {
-        isOn = !isOn;
-        document.getElementById('pwrBtn').classList.toggle('active', isOn);
-        if (!isOn) { stop(); document.getElementById('display').innerText = "POWER OFF"; }
-        else { initAudio(); ctx.resume(); scanNext(); }
-    }
-
-    function draw() {
-        const canvas = document.getElementById('visualizer');
-        const ctx2d = canvas.getContext('2d');
-        const data = new Uint8Array(analyser.frequencyBinCount);
-        function render() {
-            if (!isOn) return;
-            requestAnimationFrame(render);
-            analyser.getByteFrequencyData(data);
-            ctx2d.fillStyle = '#000'; ctx2d.fillRect(0,0,300,100);
-            for(let i=0; i<data.length; i++) {
-                ctx2d.fillStyle = '#3b82f6';
-                ctx2d.fillRect(i*4, 100-data[i]/2, 2, data[i]/2);
-            }
-        }
-        render();
+        let timer = setTimeout(() => { if (audio.paused) scanNext(); }, 6000);
+        audio.onplaying = () => { clearTimeout(timer); dial.pause(); document.getElementById('status').innerText = "LIVE"; };
     }
 </script>
 </body>
