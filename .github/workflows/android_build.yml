@@ -1,32 +1,37 @@
-name: Build Android APK
+name: Build RadioRage APK
+
 on:
+  # Auto-run when you push to the main branch
   push:
     branches: [ main ]
+  
+  # Manual run button in GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      - name: Initialize and Build APK
+      - name: Build APK (Unsigned Debug)
+        # We use --nonInteractive to skip prompts during the automated build
         run: |
           bubblewrap init --manifest=https://radiorage.vercel.app/manifest.json --nonInteractive
           bubblewrap build --nonInteractive
-        # Note: You will need to set up a signing key for a production APK.
-        # This will create an unsigned debug APK by default.
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: RadioRage-App
+          name: RadioRage-Debug-APK
           path: ./*.apk
+          retention-days: 7
