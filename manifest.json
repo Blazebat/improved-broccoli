@@ -3,7 +3,7 @@
   "short_name": "Rage Radio",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#000000",
+  "background_color": "#FF514E4E",
   "theme_color": "#FF514E4E",
   "orientation": "portrait-primary",
   "icons": [
