@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  # Opt-in to Node.js 24 now to avoid deprecation warnings
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -19,15 +18,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '24' # Updated to match the new runner default
+          node-version: '24'
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      - name: Build APK (Unsigned Debug)
+      - name: Build APK
+        # We use 'init' with a specific URL, then immediately 'build' 
+        # using the --yes flag to accept all defaults automatically.
         run: |
           bubblewrap init --manifest=https://radiorage.vercel.app/manifest.json --nonInteractive
-          bubblewrap build --nonInteractive
+          bubblewrap build --skipConfig --yes
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
