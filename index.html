@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>radiorage online</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff0000">
+
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         body { 
             margin: 0; 
-            background: #18181b; /* Slightly lighter background */
+            background: #18181b; 
             color: #fff; 
             font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
             display: flex; 
@@ -21,68 +25,67 @@
         .player { 
             width: 90%; 
             max-width: 480px; 
-            background: #27272a; /* Darker, slightly reflective background */
+            background: #27272a; 
             padding: 40px; 
-            border-radius: 40px; /* More rounded corners */
-            border: 2px solid #3f3f46; /* Subtle border */
+            border-radius: 40px; 
+            border: 2px solid #3f3f46; 
             text-align: center; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3); /* Add shadow */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
         }
         
-        /* Logo Styling */
         .logo { 
-            width: 150px; /* Reduced logo size */
+            width: 150px; 
             height: 150px; 
             margin-bottom: 25px; 
-            border-radius: 50%; /* Make logo round */
+            border-radius: 50%; 
             object-fit: cover; 
-            border: 5px solid #fff; /* White border for logo */
+            border: 5px solid #fff; 
         }
         
         .display { 
-            font-size: 1.5rem; /* Increased font size */
-            font-weight: 700; /* Bolder font */
+            font-size: 1.5rem; 
+            font-weight: 700; 
             margin-bottom: 35px; 
-            color: #22c55e; /* Bright green text */
-            height: 70px; /* Slightly taller */
+            color: #22c55e; 
+            height: 70px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             word-break: break-all; 
-            background: #000; /* Black background for LED screen */
-            border-radius: 10px; /* Rounded corners for LED screen */
-            font-family: 'Courier New', Courier, monospace; /* Monospaced font for LED feel */
-            letter-spacing: 2px; /* Add spacing between letters */
+            background: #000; 
+            border-radius: 10px; 
+            font-family: 'Courier New', Courier, monospace; 
+            letter-spacing: 2px; 
         }
 
         .controls { 
             display: flex; 
             justify-content: center; 
-            gap: 50px; /* Increased gap between buttons */
+            gap: 50px; 
         }
 
         .btn { 
-            width: 90px; /* Larger buttons */
+            width: 90px; 
             height: 90px; 
             border-radius: 50%; 
-            background: #404040; /* Lighter background for knobs */
+            background: #404040; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             cursor: pointer; 
             transition: 0.3s; 
-            border: 4px solid #6b7280; /* Thicker border for knobs */
+            border: 4px solid #6b7280; 
             font-size: 1rem; 
             font-weight: bold; 
-            text-transform: uppercase; /* Uppercase text */
-            color: #d1d5db; /* Grey text color */
+            text-transform: uppercase; 
+            color: #d1d5db; 
         }
 
         .btn:active { 
-            transform: scale(0.95); /* Smaller scale effect */
+            transform: scale(0.95); 
             background: #3b82f6; 
-            border-color: #60a5fa; /* Change border color on active */
-            color: #fff; /* Change text color to white */
+            border-color: #60a5fa; 
+            color: #fff; 
         }
 
         .visualizer { 
@@ -90,7 +93,7 @@
             height: 80px; 
             margin-top: 35px; 
             border-radius: 10px; 
-            background: #000; /* Black background for visualizer */
+            background: #000; 
             display: flex; 
             align-items: flex-end; 
             justify-content: space-between; 
@@ -100,14 +103,14 @@
         .bar { 
             width: 8px; 
             height: 0; 
-            background-color: #3b82f6; /* Blue bars */
+            background-color: #3b82f6; 
             border-radius: 4px; 
             transition: height 0.05s linear; 
         }
 
         .status { 
             font-size: 1rem; 
-            color: #a1a1aa; /* Lighter grey text */
+            color: #a1a1aa; 
             margin-top: 25px; 
         }
     </style>
@@ -121,8 +124,7 @@
         <div class="btn" id="pwrBtn" onclick="togglePower()">POWER</div>
         <div class="btn" id="scanBtn" onclick="scanNext()">TUNE</div>
     </div>
-    <div class="visualizer" id="visualizer">
-        </div>
+    <div class="visualizer" id="visualizer"></div>
     <div class="status" id="status">Ready</div>
 </div>
 
@@ -135,7 +137,7 @@
         visualizer.appendChild(bar);
     }
 
-    const stations = [
+    const stations = [ 
         { name: "NGEN Radio", url: "https://ais-sa8.cdnstream1.com/3334_64.aac" },     
         { name: "Clubmix", url: "https://stream.zeno.fm/d42hdvx96zhvv.mp3" },
         { name: "Emotions", url: "https://stream.zeno.fm/03v7z8edgphvv.mp3" },
@@ -298,8 +300,7 @@
         { name: "Brigada News FM Toledo", url: "https://toledostream.brigadanews.ph/" },
         { name: "Brigada News FM Valencia", url: "https://valenciastream.brigadanews.ph/" },
         { name: "Brigada News FM Zamboanga", url: "https://zamboangastream.brigadanews.ph/" },
-        { name: "Budots FM 98.9", url: "https://stream.zeno.fm/2uhuu5hvzqzuv" }
-    ];
+        { name: "Budots FM 98.9", url: "https://stream.zeno.fm/2uhuu5hvzqzuv" } ];
 
     const audio = new Audio();
     const dial = new Audio('dial.mp3');
@@ -315,7 +316,6 @@
             dial.pause();
             document.getElementById('display').innerText = "OFF";
             document.getElementById('status').innerText = "Ready";
-            // Stop visualizer
             document.querySelectorAll('.bar').forEach(bar => bar.style.height = '0');
         } else {
             scanNext();
@@ -324,12 +324,10 @@
 
     function scanNext() {
         if (!isOn) return;
-        
         dial.play().catch(()=>{});
         const s = stations[Math.floor(Math.random() * stations.length)];
         document.getElementById('display').innerText = s.name;
         document.getElementById('status').innerText = "Tuning...";
-
         if (s.url.includes('.m3u8')) {
             hls.loadSource(s.url);
             hls.attachMedia(audio);
@@ -339,12 +337,10 @@
             audio.load();
             audio.play().catch(()=>{});
         }
-
         let timer = setTimeout(() => { if (audio.paused) scanNext(); }, 6000);
         audio.onplaying = () => { clearTimeout(timer); dial.pause(); document.getElementById('status').innerText = "LIVE"; };
     }
 
-    // Visualizer effect (Simulated)
     audio.onplaying = () => {
         if (isOn) {
             const bars = document.querySelectorAll('.bar');
@@ -354,7 +350,17 @@
             });
         }
     }
-
 </script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registered'))
+        .catch(err => console.log('Service Worker error:', err));
+    });
+  }
+</script>
+
 </body>
 </html>
