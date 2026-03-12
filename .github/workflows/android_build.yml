@@ -1,30 +1,30 @@
 name: Build RadioRage APK
 
 on:
-  # Auto-run when you push to the main branch
   push:
     branches: [ main ]
-  
-  # Manual run button in GitHub Actions tab
   workflow_dispatch:
+
+env:
+  # Opt-in to Node.js 24 now to avoid deprecation warnings
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24' # Updated to match the new runner default
 
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
       - name: Build APK (Unsigned Debug)
-        # We use --nonInteractive to skip prompts during the automated build
         run: |
           bubblewrap init --manifest=https://radiorage.vercel.app/manifest.json --nonInteractive
           bubblewrap build --nonInteractive
