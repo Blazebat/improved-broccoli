@@ -6,17 +6,110 @@
     <title>Rage Radio Philippines</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { margin: 0; background: #0f0f12; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .player { width: 90%; max-width: 400px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); padding: 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        body { 
+            margin: 0; 
+            background: #18181b; /* Slightly lighter background */
+            color: #fff; 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
+
+        .player { 
+            width: 90%; 
+            max-width: 480px; 
+            background: #27272a; /* Darker, slightly reflective background */
+            padding: 40px; 
+            border-radius: 40px; /* More rounded corners */
+            border: 2px solid #3f3f46; /* Subtle border */
+            text-align: center; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); /* Add shadow */
+        }
         
         /* Logo Styling */
-        .logo { width: 180px; height: 180px; margin-bottom: 20px; border-radius: 15px; object-fit: cover; }
+        .logo { 
+            width: 150px; /* Reduced logo size */
+            height: 150px; 
+            margin-bottom: 25px; 
+            border-radius: 50%; /* Make logo round */
+            object-fit: cover; 
+            border: 5px solid #fff; /* White border for logo */
+        }
         
-        .display { font-size: 1.1rem; font-weight: 600; margin-bottom: 30px; color: #3b82f6; height: 60px; display: flex; align-items: center; justify-content: center; word-break: break-all; }
-        .controls { display: flex; justify-content: center; gap: 40px; }
-        .btn { width: 80px; height: 80px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; border: 2px solid #333; font-size: 0.9rem; font-weight: bold; }
-        .btn:active { transform: scale(0.9); background: #3b82f6; }
-        .status { font-size: 0.8rem; color: #666; margin-top: 20px; }
+        .display { 
+            font-size: 1.5rem; /* Increased font size */
+            font-weight: 700; /* Bolder font */
+            margin-bottom: 35px; 
+            color: #22c55e; /* Bright green text */
+            height: 70px; /* Slightly taller */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            word-break: break-all; 
+            background: #000; /* Black background for LED screen */
+            border-radius: 10px; /* Rounded corners for LED screen */
+            font-family: 'Courier New', Courier, monospace; /* Monospaced font for LED feel */
+            letter-spacing: 2px; /* Add spacing between letters */
+        }
+
+        .controls { 
+            display: flex; 
+            justify-content: center; 
+            gap: 50px; /* Increased gap between buttons */
+        }
+
+        .btn { 
+            width: 90px; /* Larger buttons */
+            height: 90px; 
+            border-radius: 50%; 
+            background: #404040; /* Lighter background for knobs */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            border: 4px solid #6b7280; /* Thicker border for knobs */
+            font-size: 1rem; 
+            font-weight: bold; 
+            text-transform: uppercase; /* Uppercase text */
+            color: #d1d5db; /* Grey text color */
+        }
+
+        .btn:active { 
+            transform: scale(0.95); /* Smaller scale effect */
+            background: #3b82f6; 
+            border-color: #60a5fa; /* Change border color on active */
+            color: #fff; /* Change text color to white */
+        }
+
+        .visualizer { 
+            width: 100%; 
+            height: 80px; 
+            margin-top: 35px; 
+            border-radius: 10px; 
+            background: #000; /* Black background for visualizer */
+            display: flex; 
+            align-items: flex-end; 
+            justify-content: space-between; 
+            padding: 5px; 
+        }
+
+        .bar { 
+            width: 8px; 
+            height: 0; 
+            background-color: #3b82f6; /* Blue bars */
+            border-radius: 4px; 
+            transition: height 0.05s linear; 
+        }
+
+        .status { 
+            font-size: 1rem; 
+            color: #a1a1aa; /* Lighter grey text */
+            margin-top: 25px; 
+        }
     </style>
 </head>
 <body>
@@ -25,13 +118,23 @@
     <img src="logo.png" alt="Rage Radio Logo" class="logo">
     <div class="display" id="display">OFF</div>
     <div class="controls">
-        <div class="btn" id="pwrBtn" onclick="togglePower()">ON/OFF</div>
-        <div class="btn" id="scanBtn" onclick="scanNext()">SCAN</div>
+        <div class="btn" id="pwrBtn" onclick="togglePower()">POWER</div>
+        <div class="btn" id="scanBtn" onclick="scanNext()">TUNE</div>
     </div>
+    <div class="visualizer" id="visualizer">
+        </div>
     <div class="status" id="status">Ready</div>
 </div>
 
 <script>
+    // Visualizer Bars
+    const visualizer = document.getElementById('visualizer');
+    for (let i = 0; i < 20; i++) {
+        const bar = document.createElement('div');
+        bar.classList.add('bar');
+        visualizer.appendChild(bar);
+    }
+
     const stations = [
         { name: "NGEN Radio", url: "https://ais-sa8.cdnstream1.com/3334_64.aac" },     
         { name: "Clubmix", url: "https://stream.zeno.fm/d42hdvx96zhvv.mp3" },
@@ -205,13 +308,15 @@
 
     function togglePower() {
         isOn = !isOn;
-        document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#222";
+        document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#404040";
         if (!isOn) {
             audio.pause();
             audio.src = "";
             dial.pause();
             document.getElementById('display').innerText = "OFF";
             document.getElementById('status').innerText = "Ready";
+            // Stop visualizer
+            document.querySelectorAll('.bar').forEach(bar => bar.style.height = '0');
         } else {
             scanNext();
         }
@@ -238,6 +343,18 @@
         let timer = setTimeout(() => { if (audio.paused) scanNext(); }, 6000);
         audio.onplaying = () => { clearTimeout(timer); dial.pause(); document.getElementById('status').innerText = "LIVE"; };
     }
+
+    // Visualizer effect (Simulated)
+    audio.onplaying = () => {
+        if (isOn) {
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach(bar => {
+                const height = Math.random() * 80;
+                bar.style.height = `${height}%`;
+            });
+        }
+    }
+
 </script>
 </body>
 </html>
