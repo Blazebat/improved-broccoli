@@ -145,20 +145,40 @@ body {
 }
 
 
-        @keyframes bounce {
-            0%, 100% { height: 10%; }
-            50% { height: 90%; }
-        }
+/* --- High-Fidelity Randomized Visualizer --- */
 
-/* Staggered animation speeds for 24-bar high-fidelity look */
-.visualizer span:nth-child(4n+1) { animation-duration: 0.8s; }
-.visualizer span:nth-child(4n+2) { animation-duration: 1.1s; }
-.visualizer span:nth-child(4n+3) { animation-duration: 1.3s; }
-.visualizer span:nth-child(4n+4) { animation-duration: 0.9s; }
+/* Base animation configuration */
+.visualizer span {
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
 
-/* Adding delay to further break the pattern */
-.visualizer span:nth-child(odd) { animation-delay: -0.2s; }
-.visualizer span:nth-child(even) { animation-delay: -0.5s; }
+/* Staggered durations & delays for 24-bar high-fidelity look */
+.visualizer span:nth-child(4n+1) { animation-duration: 0.8s; animation-delay: -0.1s; }
+.visualizer span:nth-child(4n+2) { animation-duration: 1.1s; animation-delay: -0.4s; }
+.visualizer span:nth-child(4n+3) { animation-duration: 1.3s; animation-delay: -0.7s; }
+.visualizer span:nth-child(4n+4) { animation-duration: 0.9s; animation-delay: -0.2s; }
+
+/* Apply randomized motion keyframes */
+.visualizer span:nth-child(3n+1) { animation-name: bounce-fast; }
+.visualizer span:nth-child(3n+2) { animation-name: bounce-slow; }
+.visualizer span:nth-child(3n+3) { animation-name: bounce-medium; }
+
+/* Dynamic height keyframes to mimic frequency analysis */
+@keyframes bounce-fast {
+    0%, 100% { height: 10%; }
+    50% { height: 90%; }
+}
+@keyframes bounce-slow {
+    0%, 100% { height: 20%; }
+    50% { height: 50%; }
+}
+@keyframes bounce-medium {
+    0%, 100% { height: 15%; }
+    50% { height: 75%; }
+}
+
 
         .status { 
             font-size: 1rem; 
