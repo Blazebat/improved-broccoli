@@ -6,7 +6,7 @@
     <title>radiorage online</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#FF514E4E">
+    <meta name="theme-color" content="#18181b">
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
@@ -43,30 +43,32 @@
         }
         
         .display { 
-            font-size: 1.5rem; 
+            font-size: 1.2rem; 
             font-weight: 700; 
             margin-bottom: 35px; 
             color: #22c55e; 
-            height: 70px; 
+            height: 80px; 
             display: flex; 
+            padding: 0 15px;
             align-items: center; 
             justify-content: center; 
-            word-break: break-all; 
+            word-break: break-word; 
             background: #000; 
             border-radius: 10px; 
             font-family: 'Courier New', Courier, monospace; 
-            letter-spacing: 2px; 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
         }
 
         .controls { 
             display: flex; 
             justify-content: center; 
-            gap: 50px; 
+            gap: 30px; 
         }
 
         .btn { 
-            width: 90px; 
-            height: 90px; 
+            width: 80px; 
+            height: 80px; 
             border-radius: 50%; 
             background: #404040; 
             display: flex; 
@@ -75,7 +77,7 @@
             cursor: pointer; 
             transition: 0.3s; 
             border: 4px solid #6b7280; 
-            font-size: 1rem; 
+            font-size: 0.8rem; 
             font-weight: bold; 
             text-transform: uppercase; 
             color: #d1d5db; 
@@ -83,11 +85,9 @@
 
         .btn:active { 
             transform: scale(0.95); 
-            background: #3b82f6; 
-            border-color: #60a5fa; 
-            color: #fff; 
         }
 
+        /* SPECTRUM STYLES */
         .visualizer { 
             width: 100%; 
             height: 80px; 
@@ -97,16 +97,38 @@
             display: flex; 
             align-items: flex-end; 
             justify-content: space-between; 
-            padding: 5px; 
+            padding: 10px; 
+            gap: 4px;
+            box-sizing: border-box;
         }
 
-        .bar { 
-            width: 8px; 
-            height: 0; 
-            background-color: #3b82f6; 
+        .visualizer span { 
+            flex: 1;
+            height: 4px; 
+            background: linear-gradient(to top, #3b82f6 0%, #22c55e 100%); 
             border-radius: 4px; 
-            transition: height 0.05s linear; 
+            transition: height 0.3s ease;
         }
+
+        /* Animation class toggled by JS */
+        .visualizer.active span {
+            animation: bounce 1.2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { height: 10%; }
+            50% { height: 90%; }
+        }
+
+        /* Staggered animation speeds for a realistic look */
+        .visualizer span:nth-child(1) { animation-duration: 0.8s; }
+        .visualizer span:nth-child(2) { animation-duration: 1.1s; }
+        .visualizer span:nth-child(3) { animation-duration: 1.3s; }
+        .visualizer span:nth-child(4) { animation-duration: 0.9s; }
+        .visualizer span:nth-child(5) { animation-duration: 1.2s; }
+        .visualizer span:nth-child(6) { animation-duration: 0.7s; }
+        .visualizer span:nth-child(7) { animation-duration: 1.0s; }
+        .visualizer span:nth-child(8) { animation-duration: 1.1s; }
 
         .status { 
             font-size: 1rem; 
@@ -124,24 +146,17 @@
         <div class="btn" id="pwrBtn" onclick="togglePower()">ON/OFF</div>
         <div class="btn" id="scanBtn" onclick="scanNext()">SCAN</div>
     </div>
-    <div class="visualizer" id="visualizer"></div>
+    
+    <div class="visualizer" id="visualizer">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+    </div>
+
     <div class="status" id="status">Ready</div>
 </div>
 
 <script>
-    // Visualizer Bars
-    const visualizer = document.getElementById('visualizer');
-    for (let i = 0; i < 20; i++) {
-        const bar = document.createElement('div');
-        bar.classList.add('bar');
-        visualizer.appendChild(bar);
-    }
-
-    const stations = [ 
-        { name: "BBC News World Service", url: "https://as-hls-ww-live.akamaized.net/pool_87948813/live/ww/bbc_world_service/bbc_world_service.isml/bbc_world_service-audio%3d96000.norewind.m3u8" },
-        { name: "CNN International", url: "https://tunein.cdnstream1.com/3519_96.aac" },
-        { name: "CNN Radio", url: "https://tunein.cdnstream1.com/2868_96.mp3" },
-        { name: "FOX News Radio", url: "https://live.amperwave.net/direct/foxnewsradio-foxnewsradioaac-imc?source=fnr.web" },      
+    const stations = [
         { name: "103.3 Radyo Bandera Bislig Surigao Del Sur", url: "https://cd.radyoph.com:8010/bandera64" },
         { name: "103.5 Retro Cebu City Cebu", url: "https://de3.amfmph.com:8128/stream" },
         { name: "105.5 Big Sound FM San Fernando City La Union", url: "http://162.220.162.10:8011/stream?n=5fc4dc45327b7775fc24" },
@@ -184,6 +199,7 @@
         { name: "Barangay FM Naga", url: "https://ssl.radyoph.com:8010/brgy_naga" },
         { name: "Barangay LS 97.1 Manila", url: "https://gsattv.akamaized.net/live/media0/radiodwls/Fairplay/radiodwls.m3u8" },
         { name: "Basco Radio", url: "https://stream.zeno.fm/bv184k80fs8uv.mp3" },
+        { name: "BBC News World Service", url: "https://as-hls-ww-live.akamaized.net/pool_87948813/live/ww/bbc_world_service/bbc_world_service.isml/bbc_world_service-audio%3d96000.norewind.m3u8" },
         { name: "Beam FM 92.5", url: "https://stream3.hornhost.com/8052/stream" },
         { name: "Bespren Radio", url: "https://streamnavs.net:8089/live" },
         { name: "BF 99.5 FM", url: "https://stream.zeno.fm/yf7x47v1tfeuv.mp3" },
@@ -232,6 +248,8 @@
         { name: "Christmas Radio Philippines", url: "https://us1.amfmph.com/ssl/christmasradio?1641738050672=&mp=/stream" },
         { name: "CKJS 92.7 Manitoba Canada", url: "https://evanov.streamb.live/SB00231" },
         { name: "Clubmix", url: "https://stream.zeno.fm/d42hdvx96zhvv.mp3" },
+        { name: "CNN International", url: "https://tunein.cdnstream1.com/3519_96.aac" },
+        { name: "CNN Radio", url: "https://tunein.cdnstream1.com/2868_96.mp3" },
         { name: "Cyber Pinoy Radio", url: "https://securestreams.autopo.st:1215/stream/1/" },
         { name: "D Empire Radio Pikit North Cotabato", url: "https://ssl.radyoph.com:8000/d_empire" },
         { name: "Downtown Eclipse", url: "https://stream.zeno.fm/81sjev0tizduv.mp3" },
@@ -292,6 +310,7 @@
         { name: "FM Radio Manila", url: "https://ssl.radyoph.com:8010/fmr_manila" },
         { name: "FM Radio Tacloban City Leyte", url: "https://de3.amfmph.com:8676/stream" },
         { name: "FM Radio Tagum Davao Del Norte", url: "https://de3.amfmph.com/ssl/fmrtagum?mp=/stream" },
+        { name: "FOX News Radio", url: "https://live.amperwave.net/direct/foxnewsradio-foxnewsradioaac-imc?source=fnr.web" },
         { name: "Good Vibes Pilipinas Melton Australia", url: "https://s15.myradiostream.com/:12846/;" },
         { name: "Green Pasture Christian Radio", url: "https://stream.zeno.fm/b4bn55v0r98uv.mp3" },
         { name: "GV 99.1 Angeles City, Batangas", url: "https://edge.mixlr.com/channel/gtqpn" },
@@ -564,23 +583,29 @@
         { name: "Yes FM Urdaneta City Pangasinan", url: "https://yesfmurdaneta.radioca.st/stream.mp3" },
         { name: "Yes FM Valencia City Bukidnon", url: "https://yesfmvalencia.radioca.st/stream.mp3" },
         { name: "Yes FM Zamboanga City Zamboanga Del Sur", url: "https://yesfmzamboanga.radioca.st/stream.mp3" },
-        { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" } ];
+        { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" }
+    ];
 
     const audio = new Audio();
     const dial = new Audio('dial.mp3');
     let isOn = false;
     let hls = new Hls();
+    let scanTimer;
 
     function togglePower() {
         isOn = !isOn;
+        const viz = document.getElementById('visualizer');
         document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#404040";
+        
         if (!isOn) {
             audio.pause();
             audio.src = "";
+            hls.destroy();
+            hls = new Hls();
             dial.pause();
             document.getElementById('display').innerText = "OFF";
             document.getElementById('status').innerText = "Ready";
-            document.querySelectorAll('.bar').forEach(bar => bar.style.height = '0');
+            viz.classList.remove('active');
         } else {
             scanNext();
         }
@@ -588,62 +613,57 @@
 
     function scanNext() {
         if (!isOn) return;
+        
+        // UI Reset
+        document.getElementById('visualizer').classList.remove('active');
         dial.play().catch(()=>{});
+        
         const s = stations[Math.floor(Math.random() * stations.length)];
         document.getElementById('display').innerText = s.name;
         document.getElementById('status').innerText = "Tuning...";
+
         if (s.url.includes('.m3u8')) {
             hls.loadSource(s.url);
             hls.attachMedia(audio);
             audio.play().catch(()=>{});
         } else {
+            hls.detachMedia();
             audio.src = s.url;
             audio.load();
             audio.play().catch(()=>{});
         }
-        let timer = setTimeout(() => { if (audio.paused) scanNext(); }, 6000);
-        audio.onplaying = () => { clearTimeout(timer); dial.pause(); document.getElementById('status').innerText = "LIVE"; };
+
+        // Auto-scan if the link is dead after 7 seconds
+        clearTimeout(scanTimer);
+        scanTimer = setTimeout(() => { 
+            if (audio.paused && isOn) scanNext(); 
+        }, 7000);
     }
 
     audio.onplaying = () => {
         if (isOn) {
-            const bars = document.querySelectorAll('.bar');
-            bars.forEach(bar => {
-                const height = Math.random() * 80;
-                bar.style.height = `${height}%`;
-            });
+            clearTimeout(scanTimer);
+            dial.pause();
+            document.getElementById('status').innerText = "LIVE";
+            document.getElementById('visualizer').classList.add('active');
         }
-    }
-</script>
+    };
 
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').then(reg => {
-        console.log('Service Worker registered');
+    audio.onwaiting = () => {
+        document.getElementById('status').innerText = "Buffering...";
+        document.getElementById('visualizer').classList.remove('active');
+    };
 
-        // Check for updates to the sw.js file
-        reg.addEventListener('updatefound', () => {
-          const newWorker = reg.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New content is available; force a reload to apply it
-              console.log('New version found! Reloading...');
-              window.location.reload();
-            }
-          });
+    audio.onerror = () => {
+        if (isOn) scanNext();
+    };
+
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
         });
-      }).catch(err => console.log('Service Worker error:', err));
-    });
-
-    // Ensure the page takes control of the new SW immediately
-    let refreshing;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-      window.location.reload();
-      refreshing = true;
-    });
-  }
+    }
 </script>
 
 </body>
