@@ -87,29 +87,34 @@
             transform: scale(0.95); 
         }
 
-        /* SPECTRUM STYLES */
-        .visualizer { 
-            width: 100%; 
-            height: 80px; 
-            margin-top: 35px; 
-            border-radius: 10px; 
-            background: #000; 
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: space-between; 
-            padding: 10px; 
-            gap: 4px;
-            box-sizing: border-box;
-        }
+/* SPECTRUM STYLES */
+.visualizer { 
+    width: 100%; 
+    height: 80px; 
+    margin-top: 35px; 
+    border-radius: 10px; 
+    background: #000; 
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: space-between; 
+    padding: 10px; 
+    gap: 4px;
+    box-sizing: border-box;
+    /* Ensures the gradient is pinned to the container's bounds */
+    overflow: hidden; 
+}
 
-        .visualizer span { 
+.visualizer span { 
     flex: 1;
+    min-width: 4px;
     height: 4px; 
-    /* Rainbow gradient from bottom to top */
-    background: linear-gradient(to top, #9400d3, #4b0082, #0000ff, #00ff00, #ffff00, #ff7f00, #ff0000); 
+    /* Gradient starting from Violet (#9400d3) and moving through the spectrum */
+    background: linear-gradient(to top, #9400d3, #4b0082, #0000ff, #00ff00, #ffff00, #ff7f00, #ff0000);
+    background-attachment: fixed;
     border-radius: 4px; 
     transition: height 0.3s ease;
-        }
+}
+
 
         /* Animation class toggled by JS */
         .visualizer.active span {
