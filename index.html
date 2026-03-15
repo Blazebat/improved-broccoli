@@ -10,134 +10,117 @@
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { 
-            margin: 0; 
-            background: #18181b; 
-            color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+body { 
+    margin: 0; 
+    background: radial-gradient(circle at center, #27272a 0%, #09090b 100%); 
+    color: #fff; 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    overflow: hidden; 
+}
 
-        .player { 
-            width: 90%; 
-            max-width: 480px; 
-            background: #27272a; 
-            padding: 40px; 
-            border-radius: 40px; 
-            border: 2px solid #3f3f46; 
-            text-align: center; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
-        }
-        
-        .logo { 
-            width: 150px; 
-            height: 150px; 
-            margin-bottom: 25px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: 5px solid #fff; 
-        }
-        
+.player { 
+    width: 90%; 
+    max-width: 480px; 
+    background: #18181b; 
+    padding: 30px; 
+    border-radius: 24px; 
+    /* Heavy industrial bezel look */
+    border: 4px solid #3f3f46; 
+    border-top-color: #52525b;
+    border-left-color: #52525b;
+    text-align: center; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.05); 
+}
+
+.logo { 
+    width: 120px; 
+    height: 120px; 
+    margin-bottom: 25px; 
+    border-radius: 12px; /* Square with rounded corners feels more 'automotive' */
+    object-fit: cover; 
+    border: 4px solid #27272a;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
 .display { 
-    /* Original Layout */
+    background: #000; 
+    height: 90px; 
+    margin-bottom: 30px; 
+    border-radius: 8px; 
+    border: 4px solid #000;
+    box-shadow: inset 0 4px 8px rgba(0,0,0,1), 0 0 0 2px #3f3f46;
+    position: relative;
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    height: 80px; 
-    padding: 0 15px; 
-    margin-bottom: 35px; 
-    border-radius: 10px; 
-    
-    /* Hardware Aesthetic */
-    background: #050505; 
-    border: 3px solid #1a1a1a;
-    box-shadow: inset 0 0 15px rgba(0,0,0,1), 0 0 10px rgba(34, 197, 94, 0.2);
-    overflow: hidden;
-    position: relative;
-    
-    /* Typography */
-    font-family: 'Courier New', Courier, monospace; 
-    font-size: 1.2rem; 
-    font-weight: 700; 
+    font-family: 'Courier New', monospace; 
+    font-size: 1.4rem; 
     color: #22c55e; 
-    letter-spacing: 2px; 
-    text-transform: uppercase;
-    text-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
-    word-break: break-word; 
+    text-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+    overflow: hidden;
 }
 
-/* Adds the faint hardware scanline look */
+/* Enhanced CRT Scanlines */
 .display::after {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.2) 50%);
+    inset: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
     background-size: 100% 4px;
     pointer-events: none;
+    z-index: 2;
 }
 
+.controls { 
+    display: flex; 
+    justify-content: space-between; 
+    padding: 0 20px;
+}
 
-        .controls { 
-            display: flex; 
-            justify-content: center; 
-            gap: 30px; 
-        }
+.btn { 
+    width: 70px; 
+    height: 70px; 
+    border-radius: 50%; 
+    background: linear-gradient(145deg, #3f3f46, #27272a);
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    transition: all 0.2s; 
+    border: 2px solid #52525b; 
+    box-shadow: 4px 4px 8px rgba(0,0,0,0.3), inset 1px 1px 1px rgba(255,255,255,0.1);
+    font-weight: 800; 
+    color: #a1a1aa; 
+}
 
-        .btn { 
-            width: 80px; 
-            height: 80px; 
-            border-radius: 50%; 
-            background: #404040; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            border: 4px solid #6b7280; 
-            font-size: 0.8rem; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            color: #d1d5db; 
-        }
+.btn:active { 
+    transform: translateY(2px);
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+    background: #18181b;
+}
 
-        .btn:active { 
-            transform: scale(0.95); 
-        }
+.visualizer { 
+    height: 60px; 
+    margin-top: 30px; 
+    background: #09090b; 
+    border-radius: 8px;
+    border: 1px solid #27272a;
+    padding: 8px; 
+    gap: 3px;
+    display: flex; 
+    align-items: flex-end;
+}
 
-        /* SPECTRUM STYLES */
-        .visualizer { 
-            width: 100%; 
-            height: 80px; 
-            margin-top: 35px; 
-            border-radius: 10px; 
-            background: #000; 
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: space-between; 
-            padding: 10px; 
-            gap: 4px;
-            box-sizing: border-box;
-        }
-
-        .visualizer span { 
-            flex: 1;
-            height: 4px; 
-            background: linear-gradient(to top, #ff0000 ,#ff7f00, #22c55e 100%); 
-            border-radius: 4px; 
-            transition: height 0.3s ease;
-        }
-
-        /* Animation class toggled by JS */
-        .visualizer.active span {
-            animation: bounce 1.2s ease-in-out infinite;
-        }
+.visualizer span { 
+    flex: 1;
+    background: #22c55e;
+    opacity: 0.8;
+    transition: height 0.1s ease;
+}
 
         @keyframes bounce {
             0%, 100% { height: 10%; }
