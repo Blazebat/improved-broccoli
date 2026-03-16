@@ -24,7 +24,7 @@ body {
 
 .player { 
     width: 92%; 
-    max-width: 420px;           /* typical phone-sized head unit mockup */
+    max-width: 420px;
     background: linear-gradient(145deg, #1a1a1f, #111114); 
     padding: 18px; 
     border-radius: 24px; 
@@ -38,7 +38,6 @@ body {
     overflow: hidden;
 }
 
-/* Faux bezel / dashboard mount feel */
 .player::before {
     content: "";
     position: absolute;
@@ -53,7 +52,7 @@ body {
     width: 110px; 
     height: 110px; 
     margin: 12px auto 20px; 
-    border-radius: 16px;        /* more realistic album art frame */
+    border-radius: 16px;
     object-fit: cover; 
     border: 3px solid #2a2a2f; 
     box-shadow: 0 4px 20px rgba(0,0,0,0.6);
@@ -68,7 +67,7 @@ body {
     border: 2px solid #1e1e22;
     box-shadow: 
         inset 0 3px 12px #000, 
-        0 0 14px rgba(255,80,40,0.12);  /* subtle orange power glow */
+        0 0 14px rgba(255,80,40,0.12);
     position: relative;
     overflow: hidden;
     display: flex;
@@ -95,11 +94,10 @@ body {
 
 .display .time {
     font-size: 0.95rem;
-    color: #ff5e2b;           /* classic car HU orange */
+    color: #ff5e2b;
     font-weight: bold;
 }
 
-/* Scanlines / CRT-like overlay (optional – comment out if too retro) */
 .display::after {
     content: "";
     position: absolute;
@@ -112,7 +110,7 @@ body {
         rgba(0,0,0,0.15) 4px
     );
     pointer-events: none;
-    opacity: 0.4;
+    opacity: 0.35;
 }
 
 .controls { 
@@ -128,7 +126,7 @@ body {
     height: 64px; 
     border-radius: 50%; 
     background: linear-gradient(145deg, #2c2c32, #1e1e24); 
-    display: flex; 
+    display: flex;
     align-items: center; 
     justify-content: center; 
     cursor: pointer; 
@@ -155,47 +153,38 @@ body {
     color: white;
 }
 
-/* VISUALIZER – more realistic car EQ style */
+/* ── REALISTIC CAR STEREO VISUALIZER ── */
 .visualizer { 
     width: 100%; 
-    height: 68px; 
-    margin: 20px 0 12px;
-    border-radius: 10px; 
-    background: #0a0a0c; 
-    border: 1px solid #222;
-    box-shadow: inset 0 2px 8px #000;
+    height: 90px; 
+    margin: 16px 0 20px;
+    background: #050507; 
+    border: 1px solid #1a1a1f;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 10px #000;
     display: flex; 
     align-items: flex-end; 
-    justify-content: center; 
-    gap: 5px;
-    padding: 0 12px 8px;
+    justify-content: space-between; 
+    padding: 0 14px 10px;
+    gap: 4px;
+    overflow: hidden;
 }
 
-.visualizer span { 
+.bar { 
     flex: 1;
-    height: 8px; 
-    background: linear-gradient(to top, #ff2d00, #ff6a00, #ffaa00, #22c55e); 
-    border-radius: 4px 4px 0 0; 
-    transition: height 0.12s ease-out;
-    box-shadow: 0 0 10px rgba(255,100,0,0.4);
+    height: 4px;                /* starting very low */
+    min-height: 4px;
+    max-height: 100%;
+    background: linear-gradient(to top, #ff2d00, #ff6a00, #ffaa00, #66ff99);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 0 12px rgba(255, 140, 0, 0.5);
+    transition: height 0.08s ease-out;
 }
 
-.visualizer.active span {
-    animation: eq-pulse 1.4s ease-in-out infinite alternate;
+/* Glow under active bars */
+.bar.active {
+    box-shadow: 0 0 18px rgba(255, 90, 0, 0.7);
 }
-
-@keyframes eq-pulse {
-    0%   { height: 12%; }
-    100% { height: 88%; }
-}
-
-/* Stagger timing */
-.visualizer span:nth-child(1) { animation-duration: 0.9s; }
-.visualizer span:nth-child(2) { animation-duration: 1.15s; }
-.visualizer span:nth-child(3) { animation-duration: 0.75s; }
-.visualizer span:nth-child(4) { animation-duration: 1.05s; }
-.visualizer span:nth-child(5) { animation-duration: 1.3s; }
-.visualizer span:nth-child(6) { animation-duration: 0.85s; }
 
 .status { 
     font-size: 0.9rem; 
@@ -215,8 +204,10 @@ body {
     </div>
     
     <div class="visualizer" id="visualizer">
-        <span></span><span></span><span></span><span></span>
-        <span></span><span></span><span></span><span></span>
+        <!-- 12 bars – typical car EQ look -->
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
     </div>
 
     <div class="status" id="status">Ready</div>
@@ -653,17 +644,76 @@ body {
         { name: "Yes FM Valencia City Bukidnon", url: "https://yesfmvalencia.radioca.st/stream.mp3" },
         { name: "Yes FM Zamboanga City Zamboanga Del Sur", url: "https://yesfmzamboanga.radioca.st/stream.mp3" },
         { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" }
-    ];
+        ];
 
     const audio = new Audio();
     const dial = new Audio('dial.mp3');
     let isOn = false;
     let hls = new Hls();
     let scanTimer;
+    let audioCtx, analyser, source, dataArray, animationFrameId;
+
+    const visualizer = document.getElementById('visualizer');
+    const bars = visualizer.querySelectorAll('.bar');
+
+    // ── Setup Web Audio once ──
+    function initAudioAnalysis() {
+        if (audioCtx) return;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;               // 128 frequency bins
+        analyser.smoothingTimeConstant = 0.85;
+        const bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+
+        source = audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+    }
+
+    function draw() {
+        if (!analyser) return;
+
+        animationFrameId = requestAnimationFrame(draw);
+        analyser.getByteFrequencyData(dataArray);
+
+        // Use fewer bins → group them for 12 bars (car-stereo style)
+        const step = Math.floor(dataArray.length / bars.length);
+
+        bars.forEach((bar, i) => {
+            let sum = 0;
+            for (let j = 0; j < step; j++) {
+                sum += dataArray[i * step + j] || 0;
+            }
+            const avg = sum / step;
+            // Scale to feel more dramatic (car stereos often exaggerate)
+            const heightPercent = Math.min(100, avg * 1.8);
+            bar.style.height = heightPercent + '%';
+
+            // Optional: add .active class for stronger glow on louder bars
+            if (heightPercent > 35) bar.classList.add('active');
+            else bar.classList.remove('active');
+        });
+    }
+
+    function startVisualizer() {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        draw();
+    }
+
+    function stopVisualizer() {
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+        bars.forEach(bar => {
+            bar.style.height = '4px';
+            bar.classList.remove('active');
+        });
+    }
 
     function togglePower() {
         isOn = !isOn;
-        const viz = document.getElementById('visualizer');
         document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#404040";
         
         if (!isOn) {
@@ -674,7 +724,7 @@ body {
             dial.pause();
             document.getElementById('display').innerText = "OFF";
             document.getElementById('status').innerText = "Ready";
-            viz.classList.remove('active');
+            stopVisualizer();
         } else {
             scanNext();
         }
@@ -683,13 +733,15 @@ body {
     function scanNext() {
         if (!isOn) return;
         
-        // UI Reset
-        document.getElementById('visualizer').classList.remove('active');
+        stopVisualizer();
+        visualizer.classList.remove('active');
         dial.play().catch(()=>{});
         
         const s = stations[Math.floor(Math.random() * stations.length)];
         document.getElementById('display').innerText = s.name;
         document.getElementById('status').innerText = "Tuning...";
+
+        initAudioAnalysis(); // make sure analyser is ready
 
         if (s.url.includes('.m3u8')) {
             hls.loadSource(s.url);
@@ -702,11 +754,10 @@ body {
             audio.play().catch(()=>{});
         }
 
-        // Auto-scan if the link is dead after 7 seconds
         clearTimeout(scanTimer);
         scanTimer = setTimeout(() => { 
             if (audio.paused && isOn) scanNext(); 
-        }, 7000);
+        }, 8000);
     }
 
     audio.onplaying = () => {
@@ -714,20 +765,25 @@ body {
             clearTimeout(scanTimer);
             dial.pause();
             document.getElementById('status').innerText = "LIVE";
-            document.getElementById('visualizer').classList.add('active');
+            startVisualizer();
         }
     };
 
-    audio.onwaiting = () => {
+    audio.onwaiting = audio.onstalled = () => {
         document.getElementById('status').innerText = "Buffering...";
-        document.getElementById('visualizer').classList.remove('active');
+        stopVisualizer();
     };
 
     audio.onerror = () => {
         if (isOn) scanNext();
     };
 
-    // Service Worker Registration
+    // Optional: resume context on user interaction (mobile policy)
+    document.addEventListener('click', () => {
+        if (audioCtx?.state === 'suspended') audioCtx.resume();
+    }, { once: true });
+
+    // Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
