@@ -156,21 +156,29 @@ body {
     background: #0f0f0f;
 }
 
+/* Visualizer Container Fix */
+.visualizer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 4px;
+    height: 60px;
+    width: 100%;
+    margin: 20px 0;
+}
+
 .visualizer span {
     flex: 1;
     height: 20%;
     border-radius: 4px;
-    /* Default state: animation is ready, but paused */
     animation: bounce 0.6s ease-in-out infinite alternate;
     animation-play-state: paused;
 }
 
-/* Only run the animation when the visualizer has the .active class */
 .visualizer.active span {
     animation-play-state: running;
 }
 
-/* Base styling and colors remain the same */
 .visualizer span:nth-child(odd) {
     background: linear-gradient(to top, #003366, #66ccff);
 }
@@ -178,7 +186,6 @@ body {
     background: linear-gradient(to top, #331100, #ff9933);
 }
 
-/* Staggered animation timings */
 .visualizer span:nth-child(1) { animation-duration: 0.4s; }
 .visualizer span:nth-child(2) { animation-duration: 0.7s; }
 .visualizer span:nth-child(3) { animation-duration: 0.5s; }
@@ -193,12 +200,12 @@ body {
     to   { height: 90%; opacity: 1; }
 }
 
-
 .status { 
     font-size: 1rem; 
     color: #a1a1aa; 
     margin-top: 25px; 
 }
+
     </style>
 </head>
 <body>
