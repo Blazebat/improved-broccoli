@@ -756,6 +756,18 @@ body {
         }
     };
 
+ // Add this to your main script (not the service worker)
+window.addEventListener('online', () => {
+  console.log("Back online!");
+  // Hide your "No Connection" UI here
+});
+
+window.addEventListener('offline', () => {
+  alert("No internet connection found. Please connect to access the latest updates.");
+  // Or show a custom banner/toast notification
+});
+   
+
     audio.onpause = () => {
         document.getElementById('visualizer').classList.remove('active');
     };
