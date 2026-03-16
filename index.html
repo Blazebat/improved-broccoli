@@ -12,7 +12,7 @@
     <style>
 body { 
     margin: 0; 
-    background: #0a0a0a;                /* dark dashboard simulation */
+    background: #0a0a0a;
     color: #f0f0f0; 
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
     display: flex; 
@@ -63,7 +63,7 @@ body {
     margin: 0 auto 30px; 
     padding: 12px 20px; 
     border-radius: 10px; 
-    background: #001a00;                   /* deep green-black LED background */
+    background: #001a00;
     border: 2px solid #0a330a; 
     box-shadow: 
         inset 0 0 20px rgba(0,0,0,0.95),
@@ -78,10 +78,10 @@ body {
 }
 
 .display-text {
-    font-family: 'Courier New', Courier, monospace;  /* LED / segmented style */
-    font-size: 2rem;                                 /* base size — will scale down if needed */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2rem;
     font-weight: bold;
-    color: #39ff14;                                  /* bright LED green */
+    color: #39ff14;
     letter-spacing: 2px;
     text-transform: uppercase;
     text-shadow: 
@@ -89,25 +89,18 @@ body {
         0 0 12px rgba(57, 255, 20, 0.6),
         0 0 20px rgba(57, 255, 20, 0.4);
     line-height: 1.3;
-    max-width: 100%;                                 /* prevent overflow */
-    word-break: break-word;                          /* break long words if necessary */
-    hyphens: auto;                                   /* soft hyphenation */
-    white-space: normal;                             /* allow wrapping */
+    max-width: 100%;
+    word-break: break-word;
+    hyphens: auto;
+    white-space: normal;
 }
 
-/* Auto-scale font if text is very long (keeps everything visible) */
 @media (max-width: 480px) {
-    .display-text {
-        font-size: 1.7rem;
-    }
+    .display-text { font-size: 1.7rem; }
 }
 
-/* Extra small screens fallback */
 @media (max-width: 400px) {
-    .display-text {
-        font-size: 1.45rem;
-        letter-spacing: 1.5px;
-    }
+    .display-text { font-size: 1.45rem; letter-spacing: 1.5px; }
 }
 
 .display::after {
@@ -121,22 +114,6 @@ body {
         rgba(57, 255, 20, 0.03) 100%
     );
     pointer-events: none;
-}
-
-/* Day/night simulation */
-@media (prefers-color-scheme: dark) {
-    .display { 
-        background: #002200; 
-        box-shadow: 
-            inset 0 0 20px rgba(0,0,0,0.95),
-            0 0 12px rgba(57, 255, 20, 0.18);
-    }
-    .display-text {
-        color: #66ff99;
-        text-shadow: 
-            0 0 5px rgba(102, 255, 153, 0.8),
-            0 0 10px rgba(102, 255, 153, 0.5);
-    }
 }
 
 .controls { 
@@ -221,26 +198,11 @@ body {
     to   { height: 65px; transform: scaleY(1.05); }
 }
 
-        @keyframes bounce {
-            0%, 100% { height: 10%; }
-            50% { height: 90%; }
-        }
-
-        /* Staggered animation speeds for a realistic look */
-        .visualizer span:nth-child(1) { animation-duration: 0.8s; }
-        .visualizer span:nth-child(2) { animation-duration: 1.1s; }
-        .visualizer span:nth-child(3) { animation-duration: 1.3s; }
-        .visualizer span:nth-child(4) { animation-duration: 0.9s; }
-        .visualizer span:nth-child(5) { animation-duration: 1.2s; }
-        .visualizer span:nth-child(6) { animation-duration: 0.7s; }
-        .visualizer span:nth-child(7) { animation-duration: 1.0s; }
-        .visualizer span:nth-child(8) { animation-duration: 1.1s; }
-
-        .status { 
-            font-size: 1rem; 
-            color: #a1a1aa; 
-            margin-top: 25px; 
-        }
+.status { 
+    font-size: 1rem; 
+    color: #a1a1aa; 
+    margin-top: 25px; 
+}
     </style>
 </head>
 <body>
@@ -691,29 +653,31 @@ body {
         { name: "Yes FM Urdaneta City Pangasinan", url: "https://yesfmurdaneta.radioca.st/stream.mp3" },
         { name: "Yes FM Valencia City Bukidnon", url: "https://yesfmvalencia.radioca.st/stream.mp3" },
         { name: "Yes FM Zamboanga City Zamboanga Del Sur", url: "https://yesfmzamboanga.radioca.st/stream.mp3" },
-        { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" }
+        { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" } 
     ];
 
     const audio = new Audio();
     const dial = new Audio('dial.mp3');
     let isOn = false;
     let hls = new Hls();
-    let scanTimer;
+    let scanTimer = null;
+    let currentStation = null;
 
     function togglePower() {
         isOn = !isOn;
-        const viz = document.getElementById('visualizer');
         document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#404040";
-        
+
         if (!isOn) {
             audio.pause();
             audio.src = "";
             hls.destroy();
             hls = new Hls();
             dial.pause();
+            dial.currentTime = 0;
             document.getElementById('display').innerText = "OFF";
             document.getElementById('status').innerText = "Ready";
-            viz.classList.remove('active');
+            document.getElementById('visualizer').classList.remove('active');
+            clearTimeout(scanTimer);
         } else {
             scanNext();
         }
@@ -721,55 +685,132 @@ body {
 
     function scanNext() {
         if (!isOn) return;
-        
-        // UI Reset
-        document.getElementById('visualizer').classList.remove('active');
-        dial.play().catch(()=>{});
-        
-        const s = stations[Math.floor(Math.random() * stations.length)];
-        document.getElementById('display').innerText = s.name;
-        document.getElementById('status').innerText = "Tuning...";
 
-        if (s.url.includes('.m3u8')) {
-            hls.loadSource(s.url);
-            hls.attachMedia(audio);
-            audio.play().catch(()=>{});
-        } else {
-            hls.detachMedia();
-            audio.src = s.url;
-            audio.load();
-            audio.play().catch(()=>{});
-        }
-
-        // Auto-scan if the link is dead after 7 seconds
-        clearTimeout(scanTimer);
-        scanTimer = setTimeout(() => { 
-            if (audio.paused && isOn) scanNext(); 
-        }, 7000);
+        const randomIndex = Math.floor(Math.random() * stations.length);
+        const station = stations[randomIndex];
+        playStation(station);
     }
 
-    audio.onplaying = () => {
-        if (isOn) {
-            clearTimeout(scanTimer);
-            dial.pause();
-            document.getElementById('status').innerText = "LIVE";
-            document.getElementById('visualizer').classList.add('active');
+    function playStation(station) {
+        if (!isOn) return;
+
+        currentStation = station;
+
+        document.getElementById('display').innerText = station.name;
+        document.getElementById('status').innerText = "Tuning...";
+        document.getElementById('visualizer').classList.remove('active');
+
+        dial.currentTime = 0;
+        dial.play().catch(() => {});
+
+        // Clean up previous playback
+        audio.pause();
+        audio.src = "";
+        hls.detachMedia();
+        hls.destroy();
+
+        hls = new Hls({
+            enableWorker: true,
+            lowLatencyMode: false,
+            backBufferLength: 0,
+            maxBufferLength: 12,
+            maxMaxBufferLength: 15,
+            liveSyncDurationCount: 2,
+            liveMaxLatencyDurationCount: 5,
+            fragLoadingTimeOut: 20000,
+            fragLoadingMaxRetry: 6,
+            fragLoadingRetryDelay: 1000
+        });
+
+        clearTimeout(scanTimer);
+
+        const url = station.url.trim();
+
+        if (url.includes('.m3u8') || url.includes('playlist') || url.includes('master')) {
+            // Try HLS
+            hls.loadSource(url);
+            hls.attachMedia(audio);
+
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                audio.play().catch(e => console.log("play failed", e));
+            });
+
+            hls.on(Hls.Events.ERROR, (event, data) => {
+                if (data.fatal || data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                    console.warn("HLS error → falling back to direct", data);
+                    tryDirectAudio(url);
+                }
+            });
+        } else {
+            tryDirectAudio(url);
         }
+
+        // Safety timeout - most real streams should start within \~8 seconds
+        scanTimer = setTimeout(() => {
+            if (isOn && audio.paused && currentStation === station) {
+                console.log("No audio after timeout → next station");
+                scanNext();
+            }
+        }, 8500);
+    }
+
+    function tryDirectAudio(url) {
+        hls.detachMedia();
+        hls.destroy();
+        hls = new Hls(); // fresh instance
+
+        audio.src = url;
+        audio.load();
+        audio.play().catch(e => {
+            console.log("direct play failed", e);
+        });
+    }
+
+    // ── Event listeners ──────────────────────────────────────────────
+
+    audio.onplaying = () => {
+        clearTimeout(scanTimer);
+        dial.pause();
+        document.getElementById('status').innerText = "LIVE";
+        document.getElementById('visualizer').classList.add('active');
     };
 
-    audio.onwaiting = () => {
+    audio.onwaiting = audio.onstalled = () => {
         document.getElementById('status').innerText = "Buffering...";
         document.getElementById('visualizer').classList.remove('active');
     };
 
-    audio.onerror = () => {
-        if (isOn) scanNext();
+    audio.onerror = (e) => {
+        console.warn("Audio element error", audio.error, e);
+        if (isOn) {
+            setTimeout(scanNext, 800);
+        }
     };
 
-    // Service Worker Registration
+    audio.onpause = () => {
+        if (isOn && !audio.ended && currentStation) {
+            // Unexpected pause → retry same station briefly before skipping
+            setTimeout(() => {
+                if (isOn && audio.paused && currentStation) {
+                    playStation(currentStation);
+                }
+            }, 1800);
+        }
+    };
+
+    // Optional: keep-alive for very long sessions (some browsers throttle background audio)
+    setInterval(() => {
+        if (isOn && !audio.paused) {
+            audio.currentTime += 0.01; // tiny nudge
+            audio.currentTime -= 0.01;
+        }
+    }, 30000);
+
+    // Service Worker (if you still want it)
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error:', err));
+            navigator.serviceWorker.register('sw.js')
+                .catch(err => console.log('Service Worker registration failed:', err));
         });
     }
 </script>
