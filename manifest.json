@@ -1,26 +1,33 @@
 {
-  "name": "Radio Rage",
-  "short_name": "Rage Radio",
+  "name": "RadioRage Online",
+  "short_name": "RadioRage",
+  "description": "Premium streaming experience from RadioRage Group.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#514E4E",
+  "background_color": "#000000",
   "theme_color": "#514E4E",
-  "orientation": "portrait-primary",
-  "scope": "/",
-  "id": "/?source=pwa",
-  "description": "Your go-to station for the latest hits and intense radio vibes.",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "logo.png",
-      "sizes": "190x190",
+      "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "logo.png",
-      "sizes": "500x500",
+      "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "logo.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "RadioRage Mobile Interface"
     }
   ]
 }
