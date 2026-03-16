@@ -1,11 +1,14 @@
 {
   "name": "Radio Rage",
   "short_name": "Rage Radio",
-  "start_url": "./",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#FF514E4E",
-  "theme_color": "#FF514E4E",
+  "background_color": "#514E4E",
+  "theme_color": "#514E4E",
   "orientation": "portrait-primary",
+  "scope": "/",
+  "id": "/?source=pwa",
+  "description": "Your go-to station for the latest hits and intense radio vibes.",
   "icons": [
     {
       "src": "logo.png",
