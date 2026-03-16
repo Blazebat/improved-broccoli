@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>radiorage online</title>
-    
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#18181b">
-
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
 body { 
@@ -221,19 +218,16 @@ body {
         <div class="btn" id="pwrBtn" onclick="togglePower()">ON/OFF</div>
         <div class="btn" id="scanBtn" onclick="scanNext()">SCAN</div>
     </div>
-    
-<div class="visualizer">
-    <span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span>
-</div>
-
-
+    <div class="visualizer" id="visualizer">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+    </div>
     <div class="status" id="status">Ready</div>
 </div>
 
 <script>
-    const stations = [
-        { name: "103.3 Radyo Bandera Bislig Surigao Del Sur", url: "https://cd.radyoph.com:8010/bandera64" },
+    const stations = [ 
+         { name: "103.3 Radyo Bandera Bislig Surigao Del Sur", url: "https://cd.radyoph.com:8010/bandera64" },
         { name: "103.5 Retro Cebu City Cebu", url: "https://de3.amfmph.com:8128/stream" },
         { name: "105.5 Big Sound FM San Fernando City La Union", url: "http://162.220.162.10:8011/stream?n=5fc4dc45327b7775fc24" },
         { name: "106.9 WGB FM Tabaco", url: "https://canada1.reliastream.com/proxy/dexlain2?mp=/stream&1722439583717" },
@@ -661,31 +655,25 @@ body {
         { name: "Yes FM Urdaneta City Pangasinan", url: "https://yesfmurdaneta.radioca.st/stream.mp3" },
         { name: "Yes FM Valencia City Bukidnon", url: "https://yesfmvalencia.radioca.st/stream.mp3" },
         { name: "Yes FM Zamboanga City Zamboanga Del Sur", url: "https://yesfmzamboanga.radioca.st/stream.mp3" },
-        { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" } 
-    ];
-
+        { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" }  ];
     const audio = new Audio();
     const dial = new Audio('dial.mp3');
+    dial.loop = true; 
+    
     let isOn = false;
     let hls = new Hls();
-    let scanTimer = null;
-    let currentStation = null;
+    let scanTimer;
 
     function togglePower() {
         isOn = !isOn;
         document.getElementById('pwrBtn').style.background = isOn ? "#3b82f6" : "#404040";
-
+        
         if (!isOn) {
             audio.pause();
-            audio.src = "";
-            hls.destroy();
-            hls = new Hls();
             dial.pause();
-            dial.currentTime = 0;
             document.getElementById('display').innerText = "OFF";
             document.getElementById('status').innerText = "Ready";
             document.getElementById('visualizer').classList.remove('active');
-            clearTimeout(scanTimer);
         } else {
             scanNext();
         }
@@ -693,134 +681,53 @@ body {
 
     function scanNext() {
         if (!isOn) return;
-
-        const randomIndex = Math.floor(Math.random() * stations.length);
-        const station = stations[randomIndex];
-        playStation(station);
-    }
-
-    function playStation(station) {
-        if (!isOn) return;
-
-        currentStation = station;
-
-        document.getElementById('display').innerText = station.name;
+        
+        // Start buffering feedback
+        document.getElementById('visualizer').classList.remove('active');
         document.getElementById('status').innerText = "Tuning...";
-        document.getElementById('visualizer').classList.remove('active');
+        dial.play().catch(()=>{});
+        
+        const s = stations[Math.floor(Math.random() * stations.length)];
+        document.getElementById('display').innerText = s.name;
 
-        dial.currentTime = 0;
-        dial.play().catch(() => {});
-
-        // Clean up previous playback
+        // Cleanup previous stream
         audio.pause();
-        audio.src = "";
-        hls.detachMedia();
         hls.destroy();
+        hls = new Hls();
 
-        hls = new Hls({
-            enableWorker: true,
-            lowLatencyMode: false,
-            backBufferLength: 0,
-            maxBufferLength: 12,
-            maxMaxBufferLength: 15,
-            liveSyncDurationCount: 2,
-            liveMaxLatencyDurationCount: 5,
-            fragLoadingTimeOut: 20000,
-            fragLoadingMaxRetry: 6,
-            fragLoadingRetryDelay: 1000
-        });
-
-        clearTimeout(scanTimer);
-
-        const url = station.url.trim();
-
-        if (url.includes('.m3u8') || url.includes('playlist') || url.includes('master')) {
-            // Try HLS
-            hls.loadSource(url);
+        if (s.url.includes('.m3u8')) {
+            hls.loadSource(s.url);
             hls.attachMedia(audio);
-
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                audio.play().catch(e => console.log("play failed", e));
-            });
-
-            hls.on(Hls.Events.ERROR, (event, data) => {
-                if (data.fatal || data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-                    console.warn("HLS error → falling back to direct", data);
-                    tryDirectAudio(url);
-                }
-            });
+            audio.play().catch(()=>{});
         } else {
-            tryDirectAudio(url);
+            audio.src = s.url;
+            audio.play().catch(()=>{});
         }
 
-        // Safety timeout - most real streams should start within \~8 seconds
-        scanTimer = setTimeout(() => {
-            if (isOn && audio.paused && currentStation === station) {
-                console.log("No audio after timeout → next station");
-                scanNext();
-            }
-        }, 8500);
-    }
-
-    function tryDirectAudio(url) {
-        hls.detachMedia();
-        hls.destroy();
-        hls = new Hls(); // fresh instance
-
-        audio.src = url;
-        audio.load();
-        audio.play().catch(e => {
-            console.log("direct play failed", e);
-        });
-    }
-
-    // ── Event listeners ──────────────────────────────────────────────
-
-    audio.onplaying = () => {
+        // Failsafe: retry if no data within 7 seconds
         clearTimeout(scanTimer);
-        dial.pause();
-        document.getElementById('status').innerText = "LIVE";
-        document.getElementById('visualizer').classList.add('active');
-    };
-
-    audio.onwaiting = audio.onstalled = () => {
-        document.getElementById('status').innerText = "Buffering...";
-        document.getElementById('visualizer').classList.remove('active');
-    };
-
-    audio.onerror = (e) => {
-        console.warn("Audio element error", audio.error, e);
-        if (isOn) {
-            setTimeout(scanNext, 800);
-        }
-    };
-
-    audio.onpause = () => {
-        if (isOn && !audio.ended && currentStation) {
-            // Unexpected pause → retry same station briefly before skipping
-            setTimeout(() => {
-                if (isOn && audio.paused && currentStation) {
-                    playStation(currentStation);
-                }
-            }, 1800);
-        }
-    };
-
-    // Optional: keep-alive for very long sessions (some browsers throttle background audio)
-    setInterval(() => {
-        if (isOn && !audio.paused) {
-            audio.currentTime += 0.01; // tiny nudge
-            audio.currentTime -= 0.01;
-        }
-    }, 30000);
-
-    // Service Worker (if you still want it)
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js')
-                .catch(err => console.log('Service Worker registration failed:', err));
-        });
+        scanTimer = setTimeout(() => { if (audio.paused && isOn) scanNext(); }, 7000);
     }
+
+    // Audio Sync Logic
+    audio.onplaying = () => {
+        if (isOn) {
+            dial.pause();
+            document.getElementById('status').innerText = "LIVE";
+            document.getElementById('visualizer').classList.add('active');
+            clearTimeout(scanTimer);
+        }
+    };
+
+    audio.onwaiting = () => {
+        if (isOn) {
+            dial.play().catch(()=>{});
+            document.getElementById('status').innerText = "Buffering...";
+            document.getElementById('visualizer').classList.remove('active');
+        }
+    };
+
+    audio.onerror = () => { if (isOn) scanNext(); };
 </script>
 
 </body>
