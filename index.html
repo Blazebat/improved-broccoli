@@ -10,67 +10,72 @@
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { 
-            margin: 0; 
-            background: #18181b; 
-            color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
+body { 
+    margin: 0; 
+    background: #0f0b1a;               /* deep space purple-black */
+    color: #e0e0ff;                     /* very light purple-white */
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    overflow: hidden; 
+}
 
-        .player { 
-            width: 90%; 
-            max-width: 480px; 
-            background: #27272a; 
-            padding: 40px; 
-            border-radius: 40px; 
-            border: 2px solid #3f3f46; 
-            text-align: center; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
-        }
-        
-        .logo { 
-            width: 150px; 
-            height: 150px; 
-            margin-bottom: 25px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: 5px solid #fff; 
-        }
-        
+.player { 
+    width: 90%; 
+    max-width: 480px; 
+    background: linear-gradient(135deg, #1a1333, #2a1b4d);   /* purple tones */
+    padding: 40px; 
+    border-radius: 40px; 
+    border: 2px solid #6b4eff;               /* neon purple border */
+    text-align: center; 
+    box-shadow: 
+        0 10px 30px rgba(107, 78, 255, 0.35),
+        inset 0 0 20px rgba(107, 78, 255, 0.15);
+}
+
+.logo { 
+    width: 150px; 
+    height: 150px; 
+    margin-bottom: 25px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 5px solid #00f0ff;           /* strong cyan border */
+    box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+}
+
 .display { 
-    /* Original Layout */
     display: flex; 
     align-items: center; 
     justify-content: center; 
     height: 80px; 
     padding: 0 15px; 
     margin-bottom: 35px; 
-    border-radius: 10px; 
+    border-radius: 12px; 
     
-    /* Hardware Aesthetic */
-    background: #050505; 
-    border: 3px solid #1a1a1a;
-    box-shadow: inset 0 0 15px rgba(0,0,0,1), 0 0 10px rgba(34, 197, 94, 0.2);
+    /* Hardware + neon look */
+    background: #0a0015; 
+    border: 3px solid #4d2aff;                  /* purple frame */
+    box-shadow: 
+        inset 0 0 20px rgba(0,0,0,0.9),
+        0 0 25px rgba(109, 40, 217, 0.5);       /* purple glow */
+    
     overflow: hidden;
     position: relative;
     
-    /* Typography */
     font-family: 'Courier New', Courier, monospace; 
-    font-size: 1.2rem; 
+    font-size: 1.35rem; 
     font-weight: 700; 
-    color: #22c55e; 
-    letter-spacing: 2px; 
+    color: #00f0ff;                             /* cyan text */
+    letter-spacing: 2.5px; 
     text-transform: uppercase;
-    text-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+    text-shadow: 
+        0 0 8px rgba(0, 240, 255, 0.9),
+        0 0 16px rgba(0, 240, 255, 0.5);
     word-break: break-word; 
 }
 
-/* Adds the faint hardware scanline look */
 .display::after {
     content: "";
     position: absolute;
@@ -78,67 +83,107 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.2) 50%);
-    background-size: 100% 4px;
+    background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0) 45%,
+        rgba(109, 40, 217, 0.15) 50%,
+        rgba(0,0,0,0) 55%
+    );
+    background-size: 100% 6px;
     pointer-events: none;
+    animation: scan 8s linear infinite;
 }
 
+/* subtle slow scanline animation */
+@keyframes scan {
+    0%   { transform: translateY(-100%); }
+    100% { transform: translateY(100%);  }
+}
 
-        .controls { 
-            display: flex; 
-            justify-content: center; 
-            gap: 30px; 
-        }
+.controls { 
+    display: flex; 
+    justify-content: center; 
+    gap: 30px; 
+}
 
-        .btn { 
-            width: 80px; 
-            height: 80px; 
-            border-radius: 50%; 
-            background: #404040; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            border: 4px solid #6b7280; 
-            font-size: 0.8rem; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            color: #d1d5db; 
-        }
+.btn { 
+    width: 80px; 
+    height: 80px; 
+    border-radius: 50%; 
+    background: #2a1b4d; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    cursor: pointer; 
+    transition: all 0.25s ease;
+    border: 4px solid #ff6e00;                /* orange border */
+    color: #ffcc80;
+    font-size: 0.85rem; 
+    font-weight: bold; 
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(255, 110, 0, 0.4);
+}
 
-        .btn:active { 
-            transform: scale(0.95); 
-        }
+.btn:hover {
+    background: #3f2a6b;
+    box-shadow: 0 0 30px rgba(255, 140, 0, 0.7);
+    transform: scale(1.08);
+}
 
-        /* SPECTRUM STYLES */
-        .visualizer { 
-            width: 100%; 
-            height: 80px; 
-            margin-top: 35px; 
-            border-radius: 10px; 
-            background: #000; 
-            display: flex; 
-            align-items: flex-end; 
-            justify-content: space-between; 
-            padding: 10px; 
-            gap: 4px;
-            box-sizing: border-box;
-        }
+.btn:active { 
+    transform: scale(0.93); 
+    box-shadow: 0 0 20px rgba(255, 110, 0, 0.9);
+}
 
-        .visualizer span { 
-            flex: 1;
-            height: 4px; 
-background: linear-gradient(to top, #330066, #00f0ff, #ffaa00 100%);
+/* ──────────────────────────────────────────────── */
+/*               VISUALIZER - RAGE STYLE            */
+/* ──────────────────────────────────────────────── */
 
-            border-radius: 4px; 
-            transition: height 0.3s ease;
-        }
+.visualizer { 
+    width: 100%; 
+    height: 90px; 
+    margin-top: 35px; 
+    border-radius: 12px; 
+    background: #0a0015;
+    border: 2px solid #6b4eff33;
+    display: flex; 
+    align-items: flex-end; 
+    justify-content: space-between; 
+    padding: 12px 10px; 
+    gap: 5px;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.8);
+}
 
-        /* Animation class toggled by JS */
-        .visualizer.active span {
-            animation: bounce 1.2s ease-in-out infinite;
-        }
+.visualizer span { 
+    flex: 1;
+    height: 6px; 
+    background: linear-gradient(to top, 
+        #6b00ff,      /* purple */
+        #00f0ff,      /* cyan */
+        #ffaa00       /* orange-rage */
+    );
+    border-radius: 6px; 
+    transition: height 0.18s ease-out;
+    box-shadow: 0 0 12px rgba(255, 170, 0, 0.5);
+}
+
+/* more energetic bounce */
+.visualizer.active span {
+    animation: 
+        bounce 0.9s ease-in-out infinite alternate,
+        glow 1.8s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    from { transform: scaleY(1.0); }
+    to   { transform: scaleY(1.6); }
+}
+
+@keyframes glow {
+    0%,100% { filter: brightness(1) drop-shadow(0 0 8px #ffaa00); }
+    50%     { filter: brightness(1.6) drop-shadow(0 0 18px #00f0ff); }
+}
 
         @keyframes bounce {
             0%, 100% { height: 10%; }
