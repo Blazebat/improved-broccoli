@@ -12,20 +12,15 @@
     
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-   <!-- PWA AUTO-UPDATE REGISTRATION -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').then(reg => {
                     console.log('Radio Rage PWA Ready');
-
-                    // Check for updates
                     reg.addEventListener('updatefound', () => {
                         const newWorker = reg.installing;
                         newWorker.addEventListener('statechange', () => {
-                            // If a new service worker is installed and there's an existing controller, refresh
                             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                console.log('New update found! Reloading...');
                                 window.location.reload();
                             }
                         });
@@ -34,215 +29,138 @@
             });
         }
     </script>
-</head>
 
     <style>
-body { 
-    margin: 0; 
-    background: #0a0a0a;
-    color: #f0f0f0; 
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    height: 100vh; 
-    overflow: hidden; 
-}
+        body { 
+            margin: 0; 
+            background: #0a0a0a;
+            color: #f0f0f0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
 
-.player { 
-    width: 92%; 
-    max-width: 520px; 
-    background: linear-gradient(180deg, #121212, #0c0c0c); 
-    padding: 20px; 
-    border-radius: 16px; 
-    border: 1px solid #222; 
-    border-top: 1px solid #333; 
-    border-bottom: 1px solid #111; 
-    text-align: center; 
-    box-shadow: 
-        0 15px 40px rgba(0,0,0,0.7),
-        inset 0 2px 6px rgba(255,255,255,0.03);
-    position: relative;
-    overflow: hidden;
-}
+        .player { 
+            width: 92%; 
+            max-width: 520px; 
+            background: linear-gradient(180deg, #121212, #0c0c0c); 
+            padding: 20px; 
+            border-radius: 16px; 
+            border: 1px solid #222; 
+            border-top: 1px solid #333; 
+            border-bottom: 1px solid #111; 
+            text-align: center; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7), inset 0 2px 6px rgba(255,255,255,0.03);
+            position: relative;
+            overflow: hidden;
+        }
 
-.player::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.12), transparent);
-    pointer-events: none;
-}
+        .logo { 
+            width: 120px; 
+            height: 120px; 
+            margin: 15px auto 20px; 
+            border-radius: 10px; 
+            object-fit: cover; 
+            border: 2px solid #2a2a2a; 
+        }
 
-.logo { 
-    width: 120px; 
-    height: 120px; 
-    margin: 15px auto 20px; 
-    border-radius: 10px; 
-    object-fit: cover; 
-    border: 2px solid #2a2a2a; 
-    box-shadow: inset 0 0 12px rgba(0,0,0,0.8);
-}
+        .display { 
+            min-height: 90px; 
+            margin: 0 auto 30px; 
+            padding: 12px 20px; 
+            border-radius: 10px; 
+            background: #001a00;
+            border: 2px solid #0a330a; 
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.95), 0 0 15px rgba(57, 255, 20, 0.25); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
 
-.display { 
-    min-height: 90px; 
-    margin: 0 auto 30px; 
-    padding: 12px 20px; 
-    border-radius: 10px; 
-    background: #001a00;
-    border: 2px solid #0a330a; 
-    box-shadow: 
-        inset 0 0 20px rgba(0,0,0,0.95),
-        inset 0 2px 8px rgba(57, 255, 20, 0.15),
-        0 0 15px rgba(57, 255, 20, 0.25); 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    text-align: center;
-    overflow: hidden;
-    position: relative;
-}
+        .display-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #39ff14;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 6px rgba(57, 255, 20, 0.9);
+        }
 
-.display-text {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #39ff14;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    text-shadow: 
-        0 0 6px rgba(57, 255, 20, 0.9),
-        0 0 12px rgba(57, 255, 20, 0.6),
-        0 0 20px rgba(57, 255, 20, 0.4);
-    line-height: 1.3;
-    max-width: 100%;
-    word-break: break-word;
-    hyphens: auto;
-    white-space: normal;
-}
+        .controls { 
+            display: flex; 
+            justify-content: center; 
+            gap: 20px; 
+            margin-bottom: 25px;
+        }
 
-@media (max-width: 480px) {
-    .display-text { font-size: 1.7rem; }
-}
+        .btn { 
+            width: 80px; 
+            height: 80px; 
+            border-radius: 14px; 
+            background: linear-gradient(145deg, #1e1e1e, #0f0f0f); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.18s ease;
+            border: 2px solid #333; 
+            color: #88aaff; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
 
-@media (max-width: 400px) {
-    .display-text { font-size: 1.45rem; letter-spacing: 1.5px; }
-}
+        .btn:active { 
+            transform: translateY(3px); 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+        }
 
-.display::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(57, 255, 20, 0.04) 0%,
-        transparent 50%,
-        rgba(57, 255, 20, 0.03) 100%
-    );
-    pointer-events: none;
-}
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 60px;
+            width: 100%;
+            margin: 20px 0;
+        }
 
-.controls { 
-    display: flex; 
-    justify-content: center; 
-    gap: 20px; 
-    flex-wrap: wrap;
-    margin-bottom: 25px;
-}
+        .visualizer span {
+            flex: 1;
+            height: 10%;
+            border-radius: 4px;
+            animation: bounce 0.6s ease-in-out infinite alternate;
+            animation-play-state: paused;
+            background: #333;
+        }
 
-.btn { 
-    width: 80px; 
-    height: 80px; 
-    border-radius: 14px; 
-    background: linear-gradient(145deg, #1e1e1e, #0f0f0f); 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    cursor: pointer; 
-    transition: all 0.18s ease;
-    border: 2px solid #333; 
-    border-top-color: #444;
-    border-left-color: #2c2c2c;
-    color: #88aaff; 
-    font-size: 1rem; 
-    font-weight: bold; 
-    text-transform: uppercase;
-    box-shadow: 
-        0 4px 10px rgba(0,0,0,0.5),
-        inset 0 2px 4px rgba(255,255,255,0.06);
-}
+        .visualizer.active span {
+            animation-play-state: running;
+        }
 
-.btn:hover {
-    background: linear-gradient(145deg, #2a2a2a, #181818);
-    border-color: #555;
-    color: #aaccff;
-    box-shadow: 0 6px 14px rgba(80, 140, 255, 0.25);
-}
+        .visualizer span:nth-child(odd) { background: linear-gradient(to top, #003366, #66ccff); }
+        .visualizer span:nth-child(even) { background: linear-gradient(to top, #331100, #ff9933); }
 
-.btn:active { 
-    transform: translateY(3px); 
-    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
-    background: #0f0f0f;
-}
+        @keyframes bounce {
+            from { height: 10%; opacity: 0.7; }
+            to   { height: 90%; opacity: 1; }
+        }
 
-/* Visualizer Container Fix */
-.visualizer {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 4px;
-    height: 60px;
-    width: 100%;
-    margin: 20px 0;
-}
-
-.visualizer span {
-    flex: 1;
-    height: 20%;
-    border-radius: 4px;
-    animation: bounce 0.6s ease-in-out infinite alternate;
-    animation-play-state: paused;
-}
-
-.visualizer.active span {
-    animation-play-state: running;
-}
-
-.visualizer span:nth-child(odd) {
-    background: linear-gradient(to top, #003366, #66ccff);
-}
-.visualizer span:nth-child(even) {
-    background: linear-gradient(to top, #331100, #ff9933);
-}
-
-.visualizer span:nth-child(1) { animation-duration: 0.4s; }
-.visualizer span:nth-child(2) { animation-duration: 0.7s; }
-.visualizer span:nth-child(3) { animation-duration: 0.5s; }
-.visualizer span:nth-child(4) { animation-duration: 0.8s; }
-.visualizer span:nth-child(5) { animation-duration: 0.6s; }
-.visualizer span:nth-child(6) { animation-duration: 0.45s; }
-.visualizer span:nth-child(7) { animation-duration: 0.75s; }
-.visualizer span:nth-child(8) { animation-duration: 0.55s; }
-
-@keyframes bounce {
-    from { height: 10%; opacity: 0.7; }
-    to   { height: 90%; opacity: 1; }
-}
-
-.status { 
-    font-size: 1rem; 
-    color: #a1a1aa; 
-    margin-top: 25px; 
-}
-
+        .status { font-size: 1rem; color: #a1a1aa; margin-top: 25px; }
     </style>
 </head>
 <body>
 
 <div class="player">
     <img src="logo.png" alt="Rage Radio Logo" class="logo">
-    <div class="display" id="display">OFF</div>
+    <div class="display" id="display"><span class="display-text">OFF</span></div>
     <div class="controls">
         <div class="btn" id="pwrBtn" onclick="togglePower()">ON/OFF</div>
         <div class="btn" id="scanBtn" onclick="scanNext()">SCAN</div>
@@ -257,30 +175,6 @@ body {
 <script>
     const stations = [
         { name: "103.1 LITE FM MEGA MANILA", url: "https://stream.zeno.fm/3fprt16khf9uv.mp3" },
-        { name: "97.5 dwOK FM Olongapo", url: "https://servidor22-5.brlogic.com:7014/live" },
-        { name: "AWR Hope Radio Davao", url: "https://stream.dxbh.net/hopedxma" },
-        { name: "DYAB Kaboses Radio Tacloban", url: "https://streamnavs.net:8147/stream" },
-        { name: "Golden Tiger Radio", url: "http://a2.asurahosting.com:6980/radio.mp3" },
-        { name: "Halo Halo Radio Davao", url: "https://prox.radyoph.com/s/314783353368321f737231224d35d48c" },
-        { name: "K5 News FM Palawan", url: "https://prox.radyoph.com/s/793cc15adff2fcd541b65150fb310738" },
-        { name: "K5 Pilar Radyo Tagbu-anay", url: "https://us1.amfmph.com:8934/stream" },
-        { name: "Magik FM Butuan", url: "https://prox.radyoph.com/s/a21a2b8079909c74ca6a7785500bf0b7" },
-        { name: "Magik FM Cauayan", url: "https://prox.radyoph.com/s/df630d72536522d56357a55585674971" },
-        { name: "Magik FM Dipolog", url: "https://prox.radyoph.com/s/04b83e1d91b4b359b9e92a4ecd141821" },
-        { name: "OPM Kaibigan", url: "https://prox.radyoph.com/s/69b350c35195ba075850b6a6e2bbf7c8" },
-        { name: "Pinoy Seoul Radio", url: "https://radio.pinoyseoul.com/radio/8000/live.mp3" },
-        { name: "Radyo Bagting Pagadian", url: "https://prox.radyoph.com/s/a6d7cf811def928e9ad4ef775add1c6d" },
-        { name: "Radyo Bandera Catarman", url: "https://prox.radyoph.com/s/f5afbeb4a8d648d583d67e90d5e19ead" },
-        { name: "WOW Radio", url: "https://ph.amfm.link:8030/wowradio" },       
-        { name: "Aksyon Radyo Catarman", url: "https://arcatarman.radioca.st/stream" },
-        { name: "Aksyon Radyo Catbalogan", url: "https://arcatbalogan.radioca.st/stream" },
-        { name: "Aksyon Radyo Pangasinan", url: "https://arpangasinan.radioca.st/stream" },
-        { name: "DJFJ Radio", url: "https://s1.free-shoutcast.com/stream/18214" },
-        { name: "Like Radio Bais City 104.7", url: "https://s3.free-shoutcast.com/stream/18054" },       
-        { name: "Big Radio Tagbilaran", url: "https://bigsoundfm.com/proxy/dyva/stream" },
-        { name: "Sky Radio 93.1", url: "https://cast5.asurahosting.com/proxy/skyradio/live" },        
-        { name: "Tunog Kalye", url: "https://stream.zeno.fm/vnxs4mu4kfhvv.mp3" },      
-        { name: "Mellow 947 BFM", url: "https://streamer.radio.co/sec36cd5f1/listen" },        
         { name: "103.3 Radyo Bandera Bislig Surigao Del Sur", url: "https://cd.radyoph.com:8010/bandera64" },
         { name: "103.5 Retro Cebu City Cebu", url: "https://de3.amfmph.com:8128/stream" },
         { name: "105.5 Big Sound FM San Fernando City La Union", url: "http://162.220.162.10:8011/stream?n=5fc4dc45327b7775fc24" },
@@ -296,6 +190,7 @@ body {
         { name: "95.5 Retro Davao City Davao Del Sur", url: "https://de3.amfmph.com:8135/stream" },
         { name: "95.9 Big Sound FM Baguio City Benguet", url: "https://tune.tunzilla.com/http://162.220.162.10:8011/stream" },
         { name: "96.7 KCAL Rocks", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/KCALFMAAC.aac" },
+        { name: "97.5 dwOK FM Olongapo", url: "https://servidor22-5.brlogic.com:7014/live" },
         { name: "98.7 DZFE FM Manila", url: "http://ph-icecast-win.eradioportal.com:8000/febc_dzfe" },
         { name: "ABN 96.5 FM Laoag", url: "https://stream.zeno.fm/vkm1e1y2f3quv.mp3" },
         { name: "ABSFM Maramag Bukidnon", url: "https://dj.radyoph.com:8010/absfm_maramag" },
@@ -310,13 +205,17 @@ body {
         { name: "ABSFM Tandag Surigao Del Sur", url: "https://io.amfm.link:8010/absfm_tandag" },
         { name: "Adventist World Radio 89.1 Manila", url: "https://ssl.radyoph.com:8010/awr_manila" },
         { name: "Adventist World Radio Toledo City Cebu", url: "https://stream.zeno.fm/etwbrrdrf6cuv.mp3" },
+        { name: "Aksyon Radyo Catarman", url: "https://arcatarman.radioca.st/stream" },
+        { name: "Aksyon Radyo Catbalogan", url: "https://arcatbalogan.radioca.st/stream" },
         { name: "Aksyon Radyo Iloilo City Iloilo", url: "https://in-icecast.eradioportal.com:8443/akyson_iloilo" },
         { name: "Aksyon Radyo Laoag", url: "https://arlaoag.radioca.st/stream.mp3" },
+        { name: "Aksyon Radyo Pangasinan", url: "https://arpangasinan.radioca.st/stream" },
         { name: "Aksyon Radyo Tacloban City Leyte", url: "https://de3.amfmph.com:8203/stream" },
         { name: "AllHitz24", url: "https://stream.allhitz24.com/64" },
         { name: "AMC Radio", url: "https://io.amfm.link:8030/amcradio" },
         { name: "Anchor Radio Davao", url: "https://icecast.theanchor.app/bbbc" },
         { name: "Angel Radyo Valencia City Bukidnon", url: "https://cd.radyoph.com:8020/angelradyo" },
+        { name: "AWR Hope Radio Davao", url: "https://stream.dxbh.net/hopedxma" },
         { name: "AXR Manila", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/AXR_MANILAAAC.aac" },
         { name: "B 107.9 Tacloban CIty Leyte", url: "https://streamnavs.net:8147/live" },
         { name: "Banna-tirat Internet Radio", url: "https://stream.zeno.fm/ywptdatt40duv.mp3" },
@@ -328,6 +227,7 @@ body {
         { name: "Bespren Radio", url: "https://streamnavs.net:8089/live" },
         { name: "BF 99.5 FM", url: "https://stream.zeno.fm/yf7x47v1tfeuv.mp3" },
         { name: "Bible Radio DZBR 531 AM", url: "https://stream.radio.co/se9de95c10/listen" },
+        { name: "Big Radio Tagbilaran", url: "https://bigsoundfm.com/proxy/dyva/stream" },
         { name: "Bionic Online Radio", url: "https://io.radyoph.com:8000/bionic" },
         { name: "Blazin 100", url: "https://carol.epichosts.co.uk:8592/live256" },
         { name: "Bluebird Radio FM 100.1", url: "https://stream.zeno.fm/dvfqkzzmxs8uv.mp3" },
@@ -376,6 +276,7 @@ body {
         { name: "CNN Radio", url: "https://tunein.cdnstream1.com/2868_96.mp3" },
         { name: "Cyber Pinoy Radio", url: "https://securestreams.autopo.st:1215/stream/1/" },
         { name: "D Empire Radio Pikit North Cotabato", url: "https://ssl.radyoph.com:8000/d_empire" },
+        { name: "DJFJ Radio", url: "https://s1.free-shoutcast.com/stream/18214" },
         { name: "Downtown Eclipse", url: "https://stream.zeno.fm/81sjev0tizduv.mp3" },
         { name: "Dream Radio", url: "https://razzrdfx.com/listen/dream_radio/radio.mp3" },
         { name: "Dream Radio Tacloban City Leyte", url: "https://streamnavs.net:8133/live" },
@@ -395,6 +296,7 @@ body {
         { name: "DXKI Strong Radio Cagayan De Oro City Misamis Oriental", url: "https://stream.zeno.fm/femnnphrtcltv.mp3" },
         { name: "DXKS Radyo Ronda Surigao", url: "https://dxks-rpnradio.radioca.st/stream.mp3" },
         { name: "DXRC Radyo Commando Valencia City Bukidnon", url: "https://us1.amfmph.com/ssl/radyocommando?mp=/stream&1641741793754" },
+        { name: "DYAB Kaboses Radio Tacloban", url: "https://streamnavs.net:8147/stream" },
         { name: "DYAR 92.7 Island Radio", url: "https://stream.zeno.fm/20mrfn8yw68uv.mp3" },
         { name: "DYHB RMN Bacolod City Negros Occidental", url: "https://us2.amfmph.com:8848/stream" },
         { name: "DYHP RMN Cebu City", url: "https://de3.amfmph.com/ssl/rmncebu?1680183125966=&mp=/stream" },
@@ -406,7 +308,6 @@ body {
         { name: "DZBB Super Radyo", url: "https://gsattv.akamaized.net/live/media0/radiodzbb/Fairplay/radiodzbb.m3u8" },
         { name: "DZDG Destiny Radio 96.7 FM Tayabas City Quezon", url: "https://stream.zeno.fm/cfrn2oenhljuv.mp3" },
         { name: "DZEM INC Radio", url: "https://243529.global.ssl.fastly.net/6842a712b68c56f675d988f1/live_b60a96e056fc11f084c05f5d0649296b/index.m3u8" },
-        { name: "DZGB LEGAZPI", url: "https://stream.zeno.fm/dnmfv8wykbxvv.mp3" },
         { name: "DZMM Radyo Patrol 630", url: "https://stream.zeno.fm/yaksrqvb35duv.mp3" },
         { name: "DZRH", url: "https://dzrh-azura.mmg.com.ph/listen/dzrh_manila/radio.mp3" },
         { name: "DZRH News FM Gensan", url: "https://dzrhnewsfmgensan.radioca.st/stream.mp3" },
@@ -437,10 +338,12 @@ body {
         { name: "FM Radio Tacloban City Leyte", url: "https://de3.amfmph.com:8676/stream" },
         { name: "FM Radio Tagum Davao Del Norte", url: "https://de3.amfmph.com/ssl/fmrtagum?mp=/stream" },
         { name: "FOX News Radio", url: "https://live.amperwave.net/direct/foxnewsradio-foxnewsradioaac-imc?source=fnr.web" },
+        { name: "Golden Tiger Radio", url: "http://a2.asurahosting.com:6980/radio.mp3" },
         { name: "Good Vibes Pilipinas Melton Australia", url: "https://s15.myradiostream.com/:12846/;" },
         { name: "Green Pasture Christian Radio", url: "https://stream.zeno.fm/b4bn55v0r98uv.mp3" },
         { name: "GV 99.1 Angeles City, Batangas", url: "https://edge.mixlr.com/channel/gtqpn" },
         { name: "Habagat Radio Carmen Surigao del Sur", url: "https://stream.zeno.fm/3v7w43y1bceuv.mp3" },
+        { name: "Halo Halo Radio Davao", url: "https://prox.radyoph.com/s/314783353368321f737231224d35d48c" },
         { name: "Hapi Radio DYAG 1125 Khz Sagay Negros Occidental", url: "https://de3.amfmph.com:8107/stream" },
         { name: "Heart FM 92.7 Cagayan De Oro City", url: "https://us1.amfmph.com/ssl/heartfmcdo?mp=/stream&1679730513324?n=203e5bdcbdf60b2cb149" },
         { name: "Home Radio Manila", url: "https://hrmanila.radioca.st/stream.mp3" },
@@ -459,14 +362,17 @@ body {
         { name: "K5 News FM Cagayan De Oro City", url: "https://us1.amfmph.com:8773/stream" },
         { name: "K5 News FM Dumaguete Negros Oriental", url: "https://us1.amfmph.com:8581/live" },
         { name: "K5 News FM Kabankalan Negros Occidental", url: "https://us1.amfmph.com:8523/stream" },
+        { name: "K5 News FM Palawan", url: "https://prox.radyoph.com/s/793cc15adff2fcd541b65150fb310738" },
         { name: "K5 News FM Roxas City Capiz", url: "https://us1.amfmph.com:8584/stream" },
         { name: "K5 News FM Sagay Negros Occidental", url: "http://209.126.124.126:8587/stream?n=8a15fc833d19c79ab9eb" },
         { name: "K5 News FM San Carlos Negros Occidental", url: "https://ssl.radyoph.com:8000/k5_sancarlos" },
         { name: "K5 News FM Tacloban", url: "https://us1.amfmph.com:8788/stream" },
+        { name: "K5 Pilar Radyo Tagbu-anay", url: "https://us1.amfmph.com:8934/stream" },
         { name: "Kakampi Partido", url: "https://stream.zeno.fm/ctyttfz5p06tv.mp3" },
         { name: "KGON KoolFM", url: "https://ssl.radyoph.com/listen/ch2/koolfm" },
         { name: "Kiss FM Tagbilaran City Bohol", url: "http://live.kiss102fmbohol.com:8000/kiss" },
         { name: "KJM 94.3 FM Borongan City Eastern Samar", url: "https://stream.amfm.link:8010/kjm" },
+        { name: "Like Radio Bais City 104.7", url: "https://s3.free-shoutcast.com/stream/18054" },
         { name: "LiPS 106 FM", url: "https://stream.zeno.fm/f3eha5qum7zuv.mp3" },
         { name: "Lite Rock Manila", url: "https://ice.streams.ovh:1100/stream" },
         { name: "Love Radio Bacolod City Negros Occidental", url: "https://loveradiobacolod.radioca.st/stream.mp3" },
@@ -491,9 +397,13 @@ body {
         { name: "Lucky Radio Bayugan City Agusan Del Sur", url: "https://de3.amfmph.com:8564/stream" },
         { name: "Mactan Radio Cebu", url: "https://air.doscast.com/proxy/mactanradiocebu/stream" },
         { name: "Magic 89.9", url: "https://stream.zeno.fm/sh37pvfd938uv.mp3" },
+        { name: "Magik FM Butuan", url: "https://prox.radyoph.com/s/a21a2b8079909c74ca6a7785500bf0b7" },
+        { name: "Magik FM Cauayan", url: "https://prox.radyoph.com/s/df630d72536522d56357a55585674971" },
+        { name: "Magik FM Dipolog", url: "https://prox.radyoph.com/s/04b83e1d91b4b359b9e92a4ecd141821" },
         { name: "Magnum Radyo 99.9 Cagayan De Oro", url: "http://www.magnum999.com/radio/live.mp3" },
         { name: "Manila Sound Radio", url: "https://a10.asurahosting.com:7480/radio.mp3" },
         { name: "Manila Wave Radio", url: "https://a13.asurahosting.com/listen/manila_wave_radio_2/radio.mp3" },
+        { name: "Mellow 947 BFM", url: "https://streamer.radio.co/sec36cd5f1/listen" },
         { name: "MemoRieS 89.9 Cebu", url: "http://s5.reliastream.com:7134/stream" },
         { name: "Monster BT 105.9 Cebu", url: "https://in-icecast.eradioportal.com:8443/rxcebu" },
         { name: "Monster BT 99.5 Davao City Davao Del Sur", url: "https://in-icecast.eradioportal.com:8443/monsterrx_davao_" },
@@ -511,12 +421,14 @@ body {
         { name: "OK FM Sorsogon City Sorsogon", url: "https://s20.reliastream.com:8178/stream" },
         { name: "One Radio 91.3 Tabaco City Albay", url: "https://stream.zeno.fm/w46szhpxmv8uv.mp3" },
         { name: "One Radio Christmas", url: "https://stream.zeno.fm/28yezzkazy8uv.mp3" },
+        { name: "OPM Kaibigan", url: "https://prox.radyoph.com/s/69b350c35195ba075850b6a6e2bbf7c8" },
         { name: "Pagbana-ag Radio", url: "https://stream.zeno.fm/adqlxubrtshvv.mp3" },
         { name: "Palawan Wave FM 91.9", url: "https://xcite.radyoph.com:8020/dzrt" },
         { name: "PH Lite", url: "https://stream.amfm.link:8000/phlite" },
         { name: "Pines FM Bataraza", url: "https://xcite.radyoph.com:8010/pinesfm" },
         { name: "Pinoy OFW FM", url: "https://n07.radiojar.com/4dy80ayp5gruv" },
         { name: "Pinoy Rap Radio", url: "https://stream.zeno.fm/0cdp55nqam0uv.mp3" },
+        { name: "Pinoy Seoul Radio", url: "https://radio.pinoyseoul.com/radio/8000/live.mp3" },
         { name: "Play FM Manila", url: "https://ssl.radyoph.com:8010/playfm_manila" },
         { name: "Pop Radio Philippines", url: "https://popvip-gecko.radioca.st/stream.mp3" },
         { name: "Power FM Naga City Camarines Sur", url: "https://stream.zeno.fm/n4q1s7r4qzzuv.mp3" },
@@ -527,6 +439,8 @@ body {
         { name: "Radio Pinas Davao", url: "https://us2.amfmph.com:9210/stream" },
         { name: "Radio Voice Balombong", url: "https://stream.zeno.fm/bzrr0vksasquv.mp3" },
         { name: "Radio Voice Solano", url: "https://stream.zeno.fm/d83dx9qpasquv.mp3" },
+        { name: "Radyo Bagting Pagadian", url: "https://prox.radyoph.com/s/a6d7cf811def928e9ad4ef775add1c6d" },
+        { name: "Radyo Bandera Catarman", url: "https://prox.radyoph.com/s/f5afbeb4a8d648d583d67e90d5e19ead" },
         { name: "Radyo Bandera Malaybalay City Bukidnon", url: "https://dj.radyoph.com:8000/bandera64" },
         { name: "Radyo Bandera Olongapo City Zambales", url: "https://sound.amfm.link:8030/banderaolongapo" },
         { name: "Radyo Bandera Puerto Princesa City Palawan", url: "https://bandera.radyoph.com:8000/895mq" },
@@ -638,6 +552,7 @@ body {
         { name: "RJ FM 100.3", url: "https://ssl.radyoph.com/listen/ch1/rjfm_manila" },
         { name: "Scream Radio", url: "https://stream.zeno.fm/c3z135w8zxhvv.mp3" },
         { name: "SDTV Radio", url: "https://usa2.server2028.com/listen/sdtv_radio/radio.mp3" },
+        { name: "Sky Radio 93.1", url: "https://cast5.asurahosting.com/proxy/skyradio/live" },
         { name: "South Radio News FM 102.9", url: "https://stream.zeno.fm/tyckfjknbtktv.mp3" },
         { name: "Spirit FM Batangas City Batangas", url: "https://stream.zeno.fm/zb2c835zahruv.mp3" },
         { name: "Spirit FM Gumaca", url: "https://stream.zeno.fm/ybdnwr4ws4zuv.mp3" },
@@ -680,6 +595,7 @@ body {
         { name: "Win Radio Naga City Camarines Sur", url: "https://stream.zeno.fm/sxzgyqjtehntv.mp3" },
         { name: "Win Radio Valencia City Bukidnon", url: "https://stream.zeno.fm/vzrt2visttbvv.mp3" },
         { name: "WMGC-FM 105.1 The Bounce", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WMGCFMAAC.aac" },
+        { name: "WOW Radio", url: "https://ph.amfm.link:8030/wowradio" },
         { name: "WQHT 97.1 Hot 97", url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTFMAAC.aac" },
         { name: "wRock Cebu", url: "https://wrockceb-iradioph.radioca.st/stream.mp3" },
         { name: "WWRX Jammin 107.7", url: "https://crystalout.surfernetwork.com:8001/WWRX_MP3" },
@@ -709,7 +625,9 @@ body {
         { name: "Yes FM Urdaneta City Pangasinan", url: "https://yesfmurdaneta.radioca.st/stream.mp3" },
         { name: "Yes FM Valencia City Bukidnon", url: "https://yesfmvalencia.radioca.st/stream.mp3" },
         { name: "Yes FM Zamboanga City Zamboanga Del Sur", url: "https://yesfmzamboanga.radioca.st/stream.mp3" },
-        { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" }  ];
+        { name: "Yey FM New York City New York", url: "https://stream.zeno.fm/pnjlccj6jd2uv.mp3" }
+    ];
+
     const audio = new Audio();
     const dial = new Audio('dial.mp3');
     dial.loop = true; 
@@ -722,61 +640,75 @@ body {
         isOn = !isOn;
         const pwrBtn = document.getElementById('pwrBtn');
         const visualizer = document.getElementById('visualizer');
+        const display = document.getElementById('display');
         
-        pwrBtn.style.background = isOn ? "#3b82f6" : "#404040";
+        pwrBtn.style.color = isOn ? "#3b82f6" : "#88aaff";
+        pwrBtn.style.boxShadow = isOn ? "0 0 15px rgba(59, 130, 246, 0.4)" : "0 4px 10px rgba(0,0,0,0.5)";
         
         if (!isOn) {
             audio.pause();
-            audio.src = ""; // Clear memory
+            audio.removeAttribute('src');
+            audio.load();
             hls.destroy();
             hls = new Hls();
             dial.pause();
-            document.getElementById('display').innerText = "OFF";
+            display.innerHTML = '<span class="display-text">OFF</span>';
             document.getElementById('status').innerText = "Ready";
             visualizer.classList.remove('active');
+            clearTimeout(scanTimer);
         } else {
             scanNext();
         }
     }
 
     function scanNext() {
-        if (!isOn) return;
-        
-        // Reset state for tuning
+        // If SCAN is pressed while OFF, turn it ON first
+        if (!isOn) {
+            togglePower();
+            return;
+        }
+
         const visualizer = document.getElementById('visualizer');
+        const status = document.getElementById('status');
+        const display = document.getElementById('display');
+
         visualizer.classList.remove('active');
-        document.getElementById('status').innerText = "Tuning...";
+        status.innerText = "Tuning...";
         
-        // Play tuning sound
-        dial.play().catch(e => console.log("Dial play blocked", e));
+        // Play tuning static
+        dial.currentTime = 0;
+        dial.play().catch(() => {});
         
         const s = stations[Math.floor(Math.random() * stations.length)];
-        document.getElementById('display').innerText = s.name;
+        display.innerHTML = `<span class="display-text">${s.name}</span>`;
 
-        // Cleanup
+        // Reset stream
         audio.pause();
+        audio.removeAttribute('src');
+        audio.load();
         hls.destroy();
         hls = new Hls();
 
-        // Stream selection
         if (s.url.includes('.m3u8')) {
             hls.loadSource(s.url);
             hls.attachMedia(audio);
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                if (isOn) audio.play().catch(() => {});
+            });
         } else {
             audio.src = s.url;
+            audio.play().catch(() => {
+                status.innerText = "Error - Retrying";
+            });
         }
         
-        audio.play().catch(e => console.log("Stream play blocked", e));
-
-        // Failsafe: retry if no data within 7 seconds
+        // Auto-skip if dead after 8 seconds
         clearTimeout(scanTimer);
         scanTimer = setTimeout(() => { 
             if (audio.paused && isOn) scanNext(); 
-        }, 7000);
+        }, 8000);
     }
 
-    // --- Audio Event Handlers ---
-    
     audio.onplaying = () => {
         if (isOn) {
             dial.pause();
@@ -794,25 +726,11 @@ body {
         }
     };
 
- // Add this to your main script (not the service worker)
-window.addEventListener('online', () => {
-  console.log("Back online!");
-  // Hide your "No Connection" UI here
-});
-
-window.addEventListener('offline', () => {
-  alert("No internet connection found. Please connect to listen.");
-  // Or show a custom banner/toast notification
-});
-   
-
-    audio.onpause = () => {
-        document.getElementById('visualizer').classList.remove('active');
-    };
-
     audio.onerror = () => { 
         if (isOn) scanNext(); 
     };
+
+    window.addEventListener('offline', () => alert("Internet connection lost."));
 </script>
 
 </body>
