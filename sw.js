@@ -1,57 +1,50 @@
-const CACHE_NAME = 'radiorage-v1'; // Use a version string instead of Date.now() for better caching
+const CACHE_NAME = 'radiorage-v1.1'; // BUMP THIS VERSION WHENEVER YOU CHANGE ASSETS
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json', // Added to ensure PWA installability offline
+  '/manifest.json',
   'logo.png',
-  'dial.mp3'  
+  'dial.mp3'
 ];
 
-// 1. Install: Force the new service worker to take over immediately
+// 1. Install: Populate cache
 self.addEventListener('install', (event) => {
-  self.skipWaiting(); 
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
 });
 
-// 2. Activate: Clean up old caches
+// 2. Activate: Clean up old versions
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
+        keys.map((key) => {
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// 3. Fetch: NETWORK FIRST Strategy with Offline Message
+// 3. Fetch: Stale-While-Revalidate Strategy
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // If the network works, update the cache with the new version
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, response.clone());
-          return response;
-        });
-      })
-      .catch(() => {
-        // If network fails, try the cache
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          // Update cache with fresh version from network
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, networkResponse.clone());
+            });
           }
-
-          // If NOT in cache and it's a page request, show the offline message
-          if (event.request.mode === 'navigate') {
+          return networkResponse;
+        })
+        .catch(() => {
+          // If network fails and no cache, show offline page for navigations
+          if (event.request.mode === 'navigate' && !cachedResponse) {
             return new Response(
               `<html>
                 <body style="background:#000; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; text-align:center; padding:20px;">
@@ -65,6 +58,9 @@ self.addEventListener('fetch', (event) => {
             );
           }
         });
-      })
+
+      // Return cached version immediately, or wait for network if not in cache
+      return cachedResponse || fetchPromise;
+    })
   );
 });
