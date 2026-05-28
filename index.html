@@ -85,10 +85,10 @@
 
         .display-text {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             font-weight: bold;
             color: #39ff14;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             text-shadow: 0 0 6px rgba(57, 255, 20, 0.9);
         }
@@ -115,6 +115,7 @@
             font-size: 1rem; 
             font-weight: bold; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            user-select: none;
         }
 
         .btn:active { 
@@ -122,7 +123,47 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.6);
         }
 
-        
+        /* --- VISUALIZER CLASSES FIXED & INSTALLED HERE --- */
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 60px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .visualizer span {
+            flex: 1;
+            height: 10%;
+            border-radius: 4px;
+            animation: bounce 0.6s ease-in-out infinite alternate;
+            animation-play-state: paused;
+            background: #333;
+        }
+
+        .visualizer.active span {
+            animation-play-state: running;
+        }
+
+        .visualizer span:nth-child(odd) { background: linear-gradient(to top, #003366, #66ccff); }
+        .visualizer span:nth-child(even) { background: linear-gradient(to top, #331100, #ff9933); }
+
+        /* Staggered offsets so they bounce naturally */
+        .visualizer span:nth-child(1) { animation-delay: 0.1s; }
+        .visualizer span:nth-child(2) { animation-delay: 0.4s; }
+        .visualizer span:nth-child(3) { animation-delay: 0.2s; }
+        .visualizer span:nth-child(4) { animation-delay: 0.6s; }
+        .visualizer span:nth-child(5) { animation-delay: 0.3s; }
+        .visualizer span:nth-child(6) { animation-delay: 0.5s; }
+        .visualizer span:nth-child(7) { animation-delay: 0.15s; }
+        .visualizer span:nth-child(8) { animation-delay: 0.35s; }
+
+        @keyframes bounce {
+            from { height: 10%; opacity: 0.7; }
+            to   { height: 90%; opacity: 1; }
+        }
 
         .status { font-size: 1rem; color: #a1a1aa; margin-top: 25px; }
     </style>
@@ -134,50 +175,14 @@
     <div class="display" id="display"><span class="display-text">OFF</span></div>
     <div class="controls">
         <div class="btn" id="pwrBtn" onclick="togglePower()">ON/OFF</div>
-        <div class="btn" id="scanBtn" onclick="scanNext()">SCAN.visualizer {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    gap: 4px;
-    height: 60px;
-    width: 100%;
-    margin: 20px 0;
-}
-
-.visualizer span {
-    flex: 1;
-    height: 10%;
-    border-radius: 4px;
-    animation: bounce 0.6s ease-in-out infinite alternate;
-    animation-play-state: paused;
-    background: #333;
-}
-
-.visualizer.active span {
-    animation-play-state: running;
-}
-
-.visualizer span:nth-child(odd) { background: linear-gradient(to top, #003366, #66ccff); }
-.visualizer span:nth-child(even) { background: linear-gradient(to top, #331100, #ff9933); }
-
-/* --- ADDED FOR STAGGERED BOUNCING --- */
-.visualizer span:nth-child(1) { animation-delay: 0.1s; }
-.visualizer span:nth-child(2) { animation-delay: 0.4s; }
-.visualizer span:nth-child(3) { animation-delay: 0.2s; }
-.visualizer span:nth-child(4) { animation-delay: 0.6s; }
-.visualizer span:nth-child(5) { animation-delay: 0.3s; }
-/* Add more if you have more than 5 span elements */
-
-@keyframes bounce {
-    from { height: 10%; opacity: 0.7; }
-    to   { height: 90%; opacity: 1; }
-}
-</div>
+        <div class="btn" id="scanBtn" onclick="scanNext()">SCAN</div>
     </div>
+    
     <div class="visualizer" id="visualizer">
         <span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span>
     </div>
+    
     <div class="status" id="status">Ready</div>
 </div>
 
@@ -674,7 +679,6 @@
     }
 
     function scanNext() {
-        // If SCAN is pressed while OFF, turn it ON first
         if (!isOn) {
             togglePower();
             return;
@@ -687,14 +691,12 @@
         visualizer.classList.remove('active');
         status.innerText = "Tuning...";
         
-        // Play tuning static
         dial.currentTime = 0;
         dial.play().catch(() => {});
         
         const s = stations[Math.floor(Math.random() * stations.length)];
         display.innerHTML = `<span class="display-text">${s.name}</span>`;
 
-        // Reset stream
         audio.pause();
         audio.removeAttribute('src');
         audio.load();
@@ -714,7 +716,6 @@
             });
         }
         
-        // Auto-skip if dead after 8 seconds
         clearTimeout(scanTimer);
         scanTimer = setTimeout(() => { 
             if (audio.paused && isOn) scanNext(); 
